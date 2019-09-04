@@ -5,6 +5,7 @@
 # History:
 #   v1.0  2017-11-23  charles.shih  init version
 #   v2.0  2019-09-04  charles.shih  Support RHEL8
+#   v2.1  2019-09-04  charles.shih  Minor bugfix
 
 type netperf && echo "Already installed." && exit 0
 
@@ -17,7 +18,7 @@ if [ $? -eq 0 ]; then
 	wget https://github.com/HewlettPackard/netperf/archive/netperf-2.7.0.tar.gz
 	tar -xf netperf-2.7.0.tar.gz
 	cd netperf-netperf-2.7.0/
-	make clean && ./configure && make && make install
+	./configure && make && make install
 fi
 
 cat /etc/redhat-release | grep "release 7" &>/dev/null
