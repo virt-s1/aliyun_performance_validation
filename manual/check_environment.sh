@@ -4,22 +4,15 @@
 
 # History:
 #   v1.0  2017-11-23  charles.shih  init version
+#   v2.0  2019-09-04  charles.shih  Refactory
 
 # check netperf
-type netperf &>/dev/null
-if [ $? -eq 0 ]; then
-    res_np="PASS"
-else
-    res_np="FAIL"
-fi
+res_np=$(netperf -V 2>/dev/null)
+: ${res_np:="Not installed"}
 
 # check iperf3
-type iperf3 &>/dev/null
-if [ $? -eq 0 ]; then
-    res_i3="PASS"
-else
-    res_i3="FAIL"
-fi
+res_i3=$(iperf3 -v | head -n1 2>/dev/null)
+: ${res_i3:="Not installed"}
 
 # check multiple queue
 if [ "$(ethtool -l eth0 | grep "^Combined:" | sort -u | wc -l)" = "1" ]; then
@@ -44,6 +37,8 @@ else
 fi
 
 # Show summary
-echo "Netperf:$res_np Iperf3:$res_i3 NIC_Queue:$res_nq IRQ_Bal:$res_ir RPS:$res_rp"
+echo "${res_np},${res_i3},${res_nq},${res_ir},${res_rp}" \
+| column -s "," -t --table-columns NETPERF,IPERF3,NIC_QUEUE,IRQ_BALANCE,RPS
+
 
 exit 0
