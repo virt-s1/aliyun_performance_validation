@@ -1,0 +1,25 @@
+---
+- hosts: test peers
+  tasks:
+    - name: Create the workspace
+      file:
+        path: /root/workspace
+        state: directory
+        mode: "0755"
+
+    - name: Upload scripts to remote hosts
+      copy:
+        src: ./scripts/
+        dest: /root/workspace/scripts/
+        mode: "0755"
+
+    - name: Enable NIC multiple queue
+      command: /root/workspace/scripts/config_mqueue.sh enable
+
+    - name: Enable irqbalance service
+      service:
+        name: irqbalance
+        state: restarted
+
+    - name: Check the environment
+      command: /root/workspace/scripts/check_environment.sh

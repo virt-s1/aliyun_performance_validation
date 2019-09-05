@@ -1,0 +1,14 @@
+
+ansible -i ./inventory.txt all -m ping
+
+ansible-playbook -i ./inventory.txt install_netperf.yml
+ansible-playbook -i ./inventory.txt setup_environment.yml
+
+ansible -i ./inventory.txt all -m command -a "netperf -V"
+ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/config_mqueue.sh disable"
+ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_environment.sh"
+ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/config_mqueue.sh enable"
+ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_environment.sh"
+
+
+
