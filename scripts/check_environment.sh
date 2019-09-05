@@ -14,7 +14,7 @@ res_np=$(netperf -V 2>/dev/null)
 : ${res_np:="Not installed"}
 
 # check iperf3
-res_i3=$(iperf3 -v | head -n1 2>/dev/null)
+res_i3=$(iperf3 -v 2>/dev/null | head -n1)
 : ${res_i3:="Not installed"}
 
 # check multiple queue
