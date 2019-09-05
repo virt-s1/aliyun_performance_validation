@@ -1,0 +1,20 @@
+---
+- hosts: test
+  tasks:
+    - name: Generate a new OpenSSH keypair
+      openssh_keypair:
+        path: /root/.ssh/id_ssh_rsa
+        type: rsa
+        force: true
+    - name: Fetch the public key file
+      fetch:
+        src: /root/.ssh/id_ssh_rsa.pub
+        dest: /tmp/
+- hosts: peers
+  tasks:
+    - name: Upload the public key file
+      copy:
+        src: /tmp/test/root/.ssh/id_ssh_rsa.pub
+        dest: /tmp/perftest-setup
+    - name: Setup authorized_keys
+      shell: cat /tmp/perftest-setup/id_ssh_rsa.pub >> /root/.ssh/authorized_keys

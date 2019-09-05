@@ -12,3 +12,14 @@ ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_envi
 
 
 
+# deploy ssh keypairs
+ansible-playbook -i ./inventory.txt deploy_keypairs.yml
+- or -
+ansible -i ./inventory.txt test -m openssh_keypair -a "path=/root/.ssh/id_ssh_rsa type=rsa force=true"
+ansible -i ./inventory.txt test -m fetch -a "src=/root/.ssh/id_ssh_rsa.pub dest=/tmp/"
+ansible -i ./inventory.txt peers -m copy -a "src=/tmp/test/root/.ssh/id_ssh_rsa.pub dest=/tmp/perftest-setup"
+ansible -i ./inventory.txt peers -m shell -a "cat /tmp/perftest-setup/id_ssh_rsa.pub >> /root/.ssh/authorized_keys"
+
+
+# Get Private IP list of the peers
+ansible -i ./inventory.txt peers -m shell -a "ifconfig eth0 | grep inet | awk '{print \$2}'" | grep 172 | xargs echo
