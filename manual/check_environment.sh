@@ -5,6 +5,7 @@
 # History:
 #   v1.0  2017-11-23  charles.shih  init version
 #   v2.0  2019-09-04  charles.shih  Refactory
+#   v2.1  2019-09-05  charles.shih  Enhance the outputs
 
 # check netperf
 res_np=$(netperf -V 2>/dev/null)
@@ -15,30 +16,22 @@ res_i3=$(iperf3 -v | head -n1 2>/dev/null)
 : ${res_i3:="Not installed"}
 
 # check multiple queue
-if [ "$(ethtool -l eth0 | grep "^Combined:" | sort -u | wc -l)" = "1" ]; then
-    res_nq="PASS"
-else
-    res_nq="FAIL"
-fi
+res=$(ethtool -l eth0 | grep "^Combined:")
+max=$(echo $res | cut -d ' ' -f 2)
+cur=$(echo $res | cut -d ' ' -f 4)
+res_nq="${cur:-?}/${max:-?}"
 
 # check IRQ balance
-systemctl status irqbalance | grep "active (running)" &>/dev/null
-if [ $? -eq 0 ]; then
-    res_ir="PASS"
-else
-    res_ir="FAIL"
-fi
+res_ir=$(systemctl is-active irqbalance)
 
 # check rps
-if [ "$(grep f /sys/class/net/eth0/queues/rx-*/rps_cpus | wc -l)" != "0" ]; then
-    res_rp="PASS"
-else
-    res_rp="FAIL"
-fi
+res_rp=""
+for file in $(ls /sys/class/net/eth0/queues/rx-*/rps_cpus); do
+    res_rp=${res_rp}$(cat $file)
+done
 
 # Show summary
-echo "${res_np},${res_i3},${res_nq},${res_ir},${res_rp}" \
-| column -s "," -t --table-columns NETPERF,IPERF3,NIC_QUEUE,IRQ_BALANCE,RPS
-
+echo "${res_np},${res_i3},${res_nq},${res_rp},${res_ir}" |
+    column -s "," -t --table-columns NETPERF,IPERF3,NIC_QUEUE,RPS_STAT,IRQ_BALANCE
 
 exit 0
