@@ -7,6 +7,8 @@
 #   v2.0  2019-09-04  charles.shih  Refactory
 #   v2.1  2019-09-05  charles.shih  Enhance the outputs
 
+nif=eth0
+
 # check netperf
 res_np=$(netperf -V 2>/dev/null)
 : ${res_np:="Not installed"}
@@ -16,7 +18,7 @@ res_i3=$(iperf3 -v | head -n1 2>/dev/null)
 : ${res_i3:="Not installed"}
 
 # check multiple queue
-res=$(ethtool -l eth0 | grep "^Combined:")
+res=$(ethtool -l $nif | grep "^Combined:")
 max=$(echo $res | cut -d ' ' -f 2)
 cur=$(echo $res | cut -d ' ' -f 4)
 res_nq="${cur:-?}/${max:-?}"
@@ -26,7 +28,7 @@ res_ir=$(systemctl is-active irqbalance)
 
 # check rps
 res_rp=""
-for file in $(ls /sys/class/net/eth0/queues/rx-*/rps_cpus); do
+for file in $(ls /sys/class/net/$nif/queues/rx-*/rps_cpus); do
     res_rp=${res_rp}$(cat $file)
 done
 
