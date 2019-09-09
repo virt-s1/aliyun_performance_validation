@@ -1,16 +1,11 @@
 
+# Ping all hosts
 ansible -i ./inventory.txt all -m ping
 
+# Prepare test environment
 ansible-playbook -i ./inventory.txt install_netperf.yml
 ansible-playbook -i ./inventory.txt setup_environment.yml
-
-ansible -i ./inventory.txt all -m command -a "netperf -V"
-ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/config_mqueue.sh disable"
 ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_environment.sh"
-ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/config_mqueue.sh enable"
-ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_environment.sh"
-
-
 
 # deploy ssh keypairs
 ansible-playbook -i ./inventory.txt deploy_keypairs.yml
@@ -20,6 +15,14 @@ ansible -i ./inventory.txt test -m fetch -a "src=/root/.ssh/id_ssh_rsa.pub dest=
 ansible -i ./inventory.txt peers -m copy -a "src=/tmp/test/root/.ssh/id_ssh_rsa.pub dest=/tmp/perftest-setup"
 ansible -i ./inventory.txt peers -m shell -a "cat /tmp/perftest-setup/id_ssh_rsa.pub >> /root/.ssh/authorized_keys"
 
-
 # Get Private IP list of the peers
 ansible -i ./inventory.txt peers -m shell -a "ifconfig eth0 | grep inet | awk '{print \$2}'" | grep 172 | xargs echo
+
+
+# Others
+
+ansible -i ./inventory.txt all -m command -a "netperf -V"
+ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/config_mqueue.sh disable"
+ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_environment.sh"
+ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/config_mqueue.sh enable"
+ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_environment.sh"
