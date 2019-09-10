@@ -1,10 +1,12 @@
 #!/bin/bash
 
 # This script runs on test host, it receives the peers' IP as args.
+# Ref: https://hewlettpackard.github.io/netperf/doc/netperf.html#UDP_005fSTREAM
 
 # History:
 #   v1.0  2017-11-23  charles.shih  init version
 #   v2.0  2019-09-05  charles.shih  Refactory
+#   v2.1  2019-09-09  charles.shih  Get KPIs from received numbers
 
 function start_server_on_peers() {
 	n=0
@@ -53,14 +55,14 @@ function load_test_to_peers() {
 	rm -f $sdatalog &>/dev/null
 
 	for tmplog in $(ls ./netperf.tmplog.*); do
-		sed -n '6p' $tmplog >>$sdatalog # Get the 1st line of UDP_STREAM report (local:test-machine)
+		sed -n '7p' $tmplog >>$sdatalog # Get the 2nd line of UDP_STREAM report (peer received)
 		cat $tmplog >>$debuglog
 		rm -f $tmplog
 	done
 
-	# Calculated from the 1st line of UDP_STREAM report (local:test-machine)
-	bw=$(cat $sdatalog | awk '{SUM += $6};END {print SUM / 1000}')
-	pps=$(cat $sdatalog | awk '{SUM += $4 / $3};END {print SUM / 10000}')
+	# Calculated from the 2nd line of UDP_STREAM report (peer received)
+	bw=$(cat $sdatalog | awk '{SUM += $4};END {print SUM / 1000}')
+	pps=$(cat $sdatalog | awk '{SUM += $3 / $2};END {print SUM / 10000}')
 }
 
 function start_server_on_local() {
@@ -119,12 +121,12 @@ function load_test_from_peers() {
 	rm -f $sdatalog &>/dev/null
 
 	for tmplog in $(ls ./netperf.tmplog.*); do
-		sed -n '7p' $tmplog >>$sdatalog # Get the 2nd line of UDP_STREAM report (remote:test-machine)
+		sed -n '7p' $tmplog >>$sdatalog # Get the 2nd line of UDP_STREAM report (test received)
 		cat $tmplog >>$debuglog
 		rm -f $tmplog
 	done
 
-	# Calculated from the 2nd line of UDP_STREAM report (remote:test-machine)
+	# Calculated from the 2nd line of UDP_STREAM report (test received)
 	bw=$(cat $sdatalog | awk '{SUM += $4};END {print SUM / 1000}')
 	pps=$(cat $sdatalog | awk '{SUM += $3 / $2};END {print SUM / 10000}')
 }
