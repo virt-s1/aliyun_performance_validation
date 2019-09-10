@@ -7,6 +7,10 @@
 #   v1.0  2017-11-23  charles.shih  init version
 #   v2.0  2019-09-05  charles.shih  Refactory
 #   v2.1  2019-09-09  charles.shih  Get KPIs from received numbers
+#   v2.2  2019-09-09  charles.shih  Bugfix for executing show_info_aliyun.sh
+
+PATH=$PATH:$(dirname $0)
+echo $PATH
 
 function start_server_on_peers() {
 	n=0
@@ -146,7 +150,7 @@ nicqn=$(ethtool -l eth0 | grep "Combined:" | tail -n 1 | awk '{print $2}')
 duration=10
 
 # basic information
-./show_info_aliyun.sh >>$logfile
+show_info_aliyun.sh >>$logfile
 echo -e "\n==========\\n" >>$logfile
 
 # Send test
