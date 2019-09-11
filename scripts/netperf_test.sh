@@ -8,6 +8,7 @@
 #   v2.0  2019-09-05  charles.shih  Refactory
 #   v2.1  2019-09-09  charles.shih  Get KPIs from received numbers
 #   v2.2  2019-09-09  charles.shih  Bugfix for executing show_info_aliyun.sh
+#   v2.3  2019-09-10  charles.shih  Change the duration to 30s
 
 PATH=$PATH:$(dirname $0)
 echo $PATH
@@ -147,7 +148,7 @@ nicqn=$(ethtool -l eth0 | grep "Combined:" | tail -n 1 | awk '{print $2}')
 #let maxlink=$nicqn*4	# comment this line to disable this feature
 
 # set run time
-duration=10
+duration=30
 
 # basic information
 show_info_aliyun.sh >>$logfile
