@@ -1,5 +1,5 @@
 [alibaba]
-test ansible_ssh_host=47.110.75.125
+test ansible_ssh_host=121.43.184.109
 
 [alibaba:vars]
 ansible_ssh_user=root
@@ -9,11 +9,12 @@ ansible_ssh_private_key_file=/home/cheshi/.pem/cheshi-docker.pem
 peers
 
 [peers]
-#peer1 ansible_ssh_host=47.111.150.181
-#peer2 ansible_ssh_host=121.40.105.42
-#peer3 ansible_ssh_host=47.110.67.10
-#peer4 ansible_ssh_host=118.31.124.73
-peer5 ansible_ssh_host=121.40.196.230
-peer6 ansible_ssh_host=121.40.214.250
-peer7 ansible_ssh_host=121.40.205.44
-peer8 ansible_ssh_host=121.40.213.45
+peer1 ansible_ssh_host=121.40.253.139
+peer2 ansible_ssh_host=121.40.206.201
+peer3 ansible_ssh_host=121.41.1.106
+peer4 ansible_ssh_host=121.41.2.16
+peer5 ansible_ssh_host=121.40.255.238
+peer6 ansible_ssh_host=121.41.2.132
+peer7 ansible_ssh_host=47.110.160.35
+peer8 ansible_ssh_host=121.41.2.7
+
