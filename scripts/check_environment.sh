@@ -7,6 +7,7 @@
 #   v2.0  2019-09-04  charles.shih  Refactory
 #   v2.1  2019-09-05  charles.shih  Enhance the outputs
 #   v2.2  2019-09-06  charles.shih  Bugfix for rps display
+#   v2.3  2019-10-30  charles.shih  Add RHEL7 support
 
 nif=eth0
 
@@ -34,7 +35,12 @@ for file in $(ls /sys/class/net/$nif/queues/rx-*/rps_cpus); do
 done
 
 # Show summary
-echo "${res_np};${res_i3};${res_ir};${res_nq};${res_rp}" |
-    column -s ";" -t --table-columns NETPERF,IPERF3,IRQ_BALANCE,NIC_QUEUE,RPS_STAT
+if [[ "$(uname -r)" =~ "el7" ]]; then
+    echo -e "NETPERF | IPERF3 | IRQ_BALANCE | NIC_QUEUE | RPS_STAT"
+    echo -e "${res_np} | ${res_i3} | ${res_ir} | ${res_nq} | ${res_rp}"
+else
+    echo "${res_np};${res_i3};${res_ir};${res_nq};${res_rp}" |
+        column -s ";" -t --table-columns NETPERF,IPERF3,IRQ_BALANCE,NIC_QUEUE,RPS_STAT
+fi
 
 exit 0
