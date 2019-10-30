@@ -6,6 +6,7 @@
 # History:
 #   v1.0  2019-09-05  charles.shih  init version
 #   v1.1  2019-09-05  charles.shih  configure NIC queue number
+#   v1.2  2019-10-30  charles.shih  make this script idempotent
 
 nic=eth0
 
@@ -18,8 +19,9 @@ fi
 
 # configure NIC queue num
 qmax=$(ethtool -l $nic | grep -m 1 "^Combined:" | awk '{print $2}')
+qcur=$(ethtool -l $nic | grep "^Combined:" | tail -n 1 | awk '{print $2}')
 [ "$action" = "enable" ] && qnum=$qmax || qnum=$(($qmax / 2))
-ethtool -L $nic combined $qnum || exit 1
+[ "$qcur" = "$qnum" ] || ethtool -L $nic combined $qnum || exit 1
 
 # configure rps
 for file in $(ls /sys/class/net/$nic/queues/rx-*/rps_cpus); do
