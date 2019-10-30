@@ -1,0 +1,17 @@
+---
+- hosts: test peers
+  tasks:
+    - name: Create the directory if it does not exist
+      file:
+        path: /root/workspace
+        state: directory
+        mode: "0755"
+
+    - name: Upload script to remote hosts
+      copy:
+        src: ./scripts/check_environment.sh
+        dest: /root/workspace/check_environment.sh
+        mode: "0755"
+
+    - name: Check the environment
+      command: /root/workspace/check_environment.sh
