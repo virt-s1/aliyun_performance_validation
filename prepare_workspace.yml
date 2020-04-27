@@ -1,0 +1,15 @@
+---
+- hosts: test peers
+  tasks:
+    - name: Create the workspace
+      file:
+        path: /root/workspace
+        state: directory
+        mode: "0755"
+
+    - name: Upload scripts to remote hosts
+      copy:
+        src: ./scripts/
+        dest: /root/workspace/scripts/
+        mode: "0755"
+

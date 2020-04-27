@@ -1,13 +1,24 @@
+# ECS
 
-# Ping all hosts
+## get IP address
+
+aliyun ecs DescribeInstances --RegionId cn-hongkong --ZoneId cn-hongkong-b | jq -r '.Instances.Instance[].PublicIpAddress.IpAddress[]'
+
+
+# Ansible
+
+## Ping all hosts
 ansible -i ./inventory.txt all -m ping
 
-# Prepare test environment
+## Prepare test environment
+ansible-playbook -i ./inventory.txt prepare_workspace.yml
+ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_environment.sh"
 ansible-playbook -i ./inventory.txt install_netperf.yml
 ansible-playbook -i ./inventory.txt setup_environment.yml
+ansible-playbook -i ./inventory.txt check_environment.yml
 ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_environment.sh"
 
-# deploy ssh keypairs
+## deploy ssh keypairs
 ansible-playbook -i ./inventory.txt deploy_keypairs.yml
 - or -
 ansible -i ./inventory.txt test -m openssh_keypair -a "path=/root/.ssh/id_ssh_rsa type=rsa force=true"
@@ -15,14 +26,36 @@ ansible -i ./inventory.txt test -m fetch -a "src=/root/.ssh/id_ssh_rsa.pub dest=
 ansible -i ./inventory.txt peers -m copy -a "src=/tmp/test/root/.ssh/id_ssh_rsa.pub dest=/tmp/perftest-setup"
 ansible -i ./inventory.txt peers -m shell -a "cat /tmp/perftest-setup/id_ssh_rsa.pub >> /root/.ssh/authorized_keys"
 
-# Get Private IP list of the peers
+## Get Private IP list of the peers
 ansible -i ./inventory.txt peers -m shell -a "ifconfig eth0 | grep inet | awk '{print \$2}'" | grep 172 | xargs echo
 
 
-# Others
+## Others
 
 ansible -i ./inventory.txt all -m command -a "netperf -V"
 ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/config_mqueue.sh disable"
 ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_environment.sh"
 ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/config_mqueue.sh enable"
 ansible -i ./inventory.txt all -m command -a "/root/workspace/scripts/check_environment.sh"
+
+
+# Network Performance Run
+peerip="<Private IP of peer-1>"
+peerips="<Private IP list of the peers>"
+./scripts/netperf_test.sh $peerip
+./scripts/netperf_test.sh $peerip $peerip
+./scripts/netperf_test.sh $peerip $peerip $peerip
+./scripts/netperf_test.sh $peerip $peerip $peerip $peerip
+./scripts/netperf_test.sh $peerips
+./scripts/netperf_test.sh $peerips $peerips
+./scripts/netperf_test.sh $peerips $peerips $peerips
+./scripts/netperf_test.sh $peerips $peerips $peerips $peerips
+
+Notes: 
+~~~~~
+** VMSize               Link  Duration BWtx(Gb/s) PPStx(10k) BWrx(Gb/s) PPSrx(10k) NICqn 
+** ecs.g6.26xlarge      16    30       25.034     598.994    22.4863    500.406    32    
+~~~~~
+
+If you got the results showing the RX (receving) KPIs lower than the SPEC, just add more connections to the peers. You will get a capped value, that should be the finally result.
+
