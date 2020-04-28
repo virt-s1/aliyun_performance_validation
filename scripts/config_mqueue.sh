@@ -7,6 +7,7 @@
 #   v1.0  2019-09-05  charles.shih  init version
 #   v1.1  2019-09-05  charles.shih  configure NIC queue number
 #   v1.2  2019-10-30  charles.shih  make this script idempotent
+#   v1.3  2020-04-28  charles.shih  calculate cpu sets
 
 nic=eth0
 
@@ -24,9 +25,16 @@ qcur=$(ethtool -l $nic | grep "^Combined:" | tail -n 1 | awk '{print $2}')
 [ "$qcur" = "$qnum" ] || ethtool -L $nic combined $qnum || exit 1
 
 # configure rps
+cnum=$(lscpu | grep "^CPU(s):" | awk '{print $2}')
+if [ "$action" = "enable" ]; then
+    cset=$(echo "obase=16; ibase=10; 2^${cnum}-1" | bc) || exit 1
+else
+    cset=0
+fi
+echo "CPU Number: $cnum; CPU Set: $cset"
+
 for file in $(ls /sys/class/net/$nic/queues/rx-*/rps_cpus); do
-    [ "$action" = "enable" ] && cpuset=$(cat $file | tr "[:xdigit:]" "f") || cpuset=0
-    echo $cpuset >$file || exit 1
+    echo $cset >$file || exit 1
 done
 
 exit 0
