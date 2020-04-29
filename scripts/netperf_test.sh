@@ -9,6 +9,7 @@
 #   v2.1  2019-09-09  charles.shih  Get KPIs from received numbers
 #   v2.2  2019-09-09  charles.shih  Bugfix for executing show_info_aliyun.sh
 #   v2.3  2019-09-10  charles.shih  Change the duration to 30s
+#   v2.4  2020-04-29  charles.shih  Change the private key file
 
 PATH=$PATH:$(dirname $0)
 echo $PATH
@@ -137,7 +138,7 @@ function load_test_from_peers() {
 }
 
 # main
-sshopt="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /root/.ssh/id_ssh_rsa -l root -q"
+sshopt="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /root/sshkey.pem -l root -q"
 [ "$#" = "0" ] && echo "Usage: $0 <Private IP list of peers>" && exit 1
 peer_host_list=$@
 vmsize=$(curl http://100.100.100.200/latest/meta-data/instance/instance-type 2>/dev/null)
