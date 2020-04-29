@@ -10,6 +10,7 @@
 #   v1.2  2019-10-30  charles.shih  make this script idempotent
 #   v1.3  2020-04-28  charles.shih  calculate cpu sets
 #   v1.4  2020-04-29  charles.shih  Refactory this script
+#   v1.5  2020-04-29  charles.shih  Bugfix for the cpuset calculation
 
 set -e
 
@@ -40,7 +41,13 @@ echo "Set the NIC queue number to $qnum (max:$qmax)."
 # Calculate the cpuset for rps
 cnum=$(lscpu | grep "^CPU(s):" | awk '{print $2}')
 if [ "$action" = "optimized" ]; then
-    cset=$(echo "obase=16; ibase=10; 2^${cnum}-1" | bc)
+    #cset=$(echo "obase=16; ibase=10; 2^${cnum}-1" | bc)
+    cset=$(cat /sys/class/net/$nic/queues/rx-0/rps_cpus | tr "[:xdigit:]" "f")
+    case $(($cnum % 4)) in
+    3) cset=${cset/f/7} ;;
+    2) cset=${cset/f/3} ;;
+    1) cset=${cset/f/1} ;;
+    esac
 else
     cset=0
 fi

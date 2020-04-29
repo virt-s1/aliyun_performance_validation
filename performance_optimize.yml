@@ -2,10 +2,10 @@
 - name: Ensure the environment is optimized for performance testing
   hosts: all
   tasks:
-    - name: Setup tools
-      package:
-        name: bc
-        state: present
+    # - name: Setup tools
+    #   package:
+    #     name: bc
+    #     state: present
 
     - name: Enable NIC multiple queue
       script: ./scripts/config_nic_queues.sh optimized
