@@ -1,43 +1,39 @@
 ---
-- hosts: test peers
+- name: Make sure netperf is installed
+  hosts: test,peers
+  vars:
+    tarball: "./files/netperf-2.7.0.tar.gz"
+    folder_name: "netperf-netperf-2.7.0"
   tasks:
-    - name: Install all the packages
-      yum:
+    - name: Install compile tools
+      package:
         name:
-          - wget
           - make
           - gcc
         state: present
 
-    - name: Create the directory if it does not exist
+    - name: Create directory for installation
       file:
         path: /tmp/perftest-setup
         state: directory
         mode: "0755"
 
-    - name: Download netperf tarball
-      get_url:
-        url: https://github.com/HewlettPackard/netperf/archive/netperf-2.7.0.tar.gz
-        dest: /tmp/perftest-setup/netperf-2.7.0.tar.gz
-
-    - name: Extract the tarball
+    - name: Extract tarball
       unarchive:
-        src: /tmp/perftest-setup/netperf-2.7.0.tar.gz
+        src: "{{ tarball }}"
         dest: /tmp/perftest-setup/
-        remote_src: yes
 
-    - name: Install the netperf tools (./configure)
+    - name: Install netperf (./configure)
       command: ./configure
       args:
-        chdir: /tmp/perftest-setup/netperf-netperf-2.7.0
-    - name: Install the netperf tools (make)
+        chdir: /tmp/perftest-setup/{{ folder_name }}
+
+    - name: Install netperf (make)
       command: make
       args:
-        chdir: /tmp/perftest-setup/netperf-netperf-2.7.0
-    - name: Install the netperf tools (make install)
+        chdir: /tmp/perftest-setup/{{ folder_name }}
+
+    - name: Install netperf (make install)
       command: make install
       args:
-        chdir: /tmp/perftest-setup/netperf-netperf-2.7.0
-
-    - name: Check the netperf tools
-      command: netperf -V; netserver -V
+        chdir: /tmp/perftest-setup/{{ folder_name }}
