@@ -1,0 +1,6 @@
+test ansible_host=182.92.95.111
+
+[peers]
+peer1 ansible_host=101.201.144.101
+peer2 ansible_host=47.93.87.95
+
