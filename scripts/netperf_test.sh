@@ -10,9 +10,9 @@
 #   v2.2  2019-09-09  charles.shih  Bugfix for executing show_info_aliyun.sh
 #   v2.3  2019-09-10  charles.shih  Change the duration to 30s
 #   v2.4  2020-04-29  charles.shih  Change the private key file
+#   v2.5  2020-04-29  charles.shih  Integrate show_info_aliyun.sh
 
 PATH=$PATH:$(dirname $0)
-echo $PATH
 
 function start_server_on_peers() {
 	n=0
@@ -137,6 +137,41 @@ function load_test_from_peers() {
 	pps=$(cat $sdatalog | awk '{SUM += $3 / $2};END {print SUM / 10000}')
 }
 
+function show() {
+	# $1: Title;
+	# $@: Command;
+
+	if [ "$1" = "" ]; then
+		echo -e "\n\$$@"
+	else
+		echo -e "\n* $1"
+	fi
+	echo -e "---------------"
+	shift
+	$@ 2>&1
+}
+
+function show_info_aliyun() {
+	show "Time" date
+	show "Release" cat /etc/system-release
+
+	show "" uname -a
+	show "" cat /proc/cmdline
+	show "" systemd-analyze
+
+	show "" free -m
+	show "" lscpu
+
+	show "" lsblk -p
+	show "" ip addr
+	show "Metadata" ./metadata.sh
+
+	# Additional
+	show "" ethtool -l eth0
+	show "" systemctl status irqbalance
+	show "" tail /sys/class/net/eth0/queues/rx-*/{rps_cpus,rps_flow_cnt}
+}
+
 # main
 sshopt="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /root/sshkey.pem -l root -q"
 [ "$#" = "0" ] && echo "Usage: $0 <Private IP list of peers>" && exit 1
@@ -152,7 +187,8 @@ nicqn=$(ethtool -l eth0 | grep "Combined:" | tail -n 1 | awk '{print $2}')
 duration=30
 
 # basic information
-show_info_aliyun.sh >>$logfile
+show_info_aliyun >>$logfile
+
 echo -e "\n==========\\n" >>$logfile
 
 # Send test
