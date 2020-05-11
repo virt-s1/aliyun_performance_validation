@@ -39,8 +39,8 @@ echo "Set the NIC queue number to $qnum (max:$qmax)."
 [ "$qcur" != "$qnum" ] && ethtool -L $nic combined $qnum
 
 # Calculate the cpuset for rps
-cnum=$(lscpu | grep "^CPU(s):" | awk '{print $2}')
 if [ "$action" = "optimized" ]; then
+    cnum=$(lscpu | grep "^CPU(s):" | awk '{print $2}')
     #cset=$(echo "obase=16; ibase=10; 2^${cnum}-1" | bc)
     cset=$(cat /sys/class/net/$nic/queues/rx-0/rps_cpus | tr "[:xdigit:]" "f")
     case $(($cnum % 4)) in
