@@ -8,6 +8,7 @@
 #   v2.1  2019-09-05  charles.shih  Enhance the outputs
 #   v2.2  2019-09-06  charles.shih  Bugfix for rps display
 #   v2.3  2019-10-30  charles.shih  Add RHEL7 support
+#   v2.4  2020-04-29  charles.shih  Adjust output format
 
 nif=eth0
 
@@ -35,12 +36,18 @@ for file in $(ls /sys/class/net/$nif/queues/rx-*/rps_cpus); do
 done
 
 # Show summary
-if [[ "$(uname -r)" =~ "el7" ]]; then
-    echo -e "NETPERF | IPERF3 | IRQ_BALANCE | NIC_QUEUE | RPS_STAT"
-    echo -e "${res_np} | ${res_i3} | ${res_ir} | ${res_nq} | ${res_rp}"
-else
-    echo "${res_np};${res_i3};${res_ir};${res_nq};${res_rp}" |
-        column -s ";" -t --table-columns NETPERF,IPERF3,IRQ_BALANCE,NIC_QUEUE,RPS_STAT
-fi
+# if [[ "$(uname -r)" =~ "el7" ]]; then
+#     echo -e "NETPERF | IPERF3 | IRQ_BALANCE | NIC_QUEUE | RPS_STAT"
+#     echo -e "${res_np} | ${res_i3} | ${res_ir} | ${res_nq} | ${res_rp}"
+# else
+#     echo "${res_np};${res_i3};${res_ir};${res_nq};${res_rp}" |
+#         column -s ";" -t --table-columns NETPERF,IPERF3,IRQ_BALANCE,NIC_QUEUE,RPS_STAT
+# fi
+
+echo "NETPERF    : ${res_np}"
+echo "IPERF3     : ${res_i3}"
+echo "IRQ_BALANCE: ${res_ir}"
+echo "NIC_QUEUE  : ${res_nq}"
+echo "RPS_STAT   : ${res_rp}"
 
 exit 0
