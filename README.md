@@ -5,7 +5,7 @@ Performance Validation on Alibaba Cloud with Ansible
 # Usage
 
 ## Ping all the hosts
-ansible all -m ping
+ansible all -m ping -o
 
 ## Install test tools
 ansible-playbook ./install_netperf.yml
@@ -21,6 +21,12 @@ ansible test -m copy -a "src='~/.pem/cheshi-docker.pem' dest='/root/sshkey.pem' 
 
 ## Get a list of peer-ips
 ansible peers -m shell -a "ifconfig eth0 | grep inet | awk '{print \$2}'" | grep 172 | xargs echo
+ipaddrs=$(ansible peers -m shell -a "ifconfig eth0 | grep inet | awk '{print \$2}'" | grep 172 | xargs echo)
 
 ## Run the test scripts
-ansible all -m script -a "./scripts/netperf_test.sh <peer-ip list>"
+ansible test -m script -a "./scripts/netperf_test.sh <peer-ip list>"
+ansible test -m script -a "./scripts/netperf_test.sh $ipaddrs"
+ansible test -m script -a "./scripts/netperf_test.sh $ipaddrs $ipaddrs"
+ansible test -m script -a "./scripts/netperf_test.sh $ipaddrs $ipaddrs $ipaddrs $ipaddrs"
+ansible test -m script -a "./scripts/netperf_test.sh $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs"
+
