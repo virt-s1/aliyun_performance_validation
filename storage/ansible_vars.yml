@@ -1,5 +1,8 @@
-cidr_block: 192.168.0.0/16
+vpc_name: cheshi-perf-vpc
+vpc_cidr: 192.168.0.0/16
+vsw_name: cheshi-perf-vswitch
 vsw_cidr: 192.168.7.0/24
+sg_name: cheshi-perf-group
 alicloud_region: cn-beijing
 alicloud_zone: cn-beijing-g
 instance_name: cheshi-ansible-test

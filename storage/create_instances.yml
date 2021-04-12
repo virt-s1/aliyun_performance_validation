@@ -5,33 +5,21 @@
     - ansible_vars.yml
 
   tasks:
-    - name: Create VPC
-      ali_vpc:
-        vpc_name: cheshi-perf-vpc
+    - name: Get VSwitch ID
+      ali_vswitch_facts:
         alicloud_region: "{{ alicloud_region }}"
-        cidr_block: "{{ cidr_block }}"
-      register: created_vpc
+        name_prefix: "{{ vsw_name }}"
+        filters:
+          zone_id: "{{ alicloud_zone }}"
+      register: vsw_facts
 
-    - name: Create VSwitch
-      ali_vswitch:
-        vswitch_name: cheshi-perf-vswitch
+    - name: Get Group ID
+      ali_security_group_facts:
         alicloud_region: "{{ alicloud_region }}"
-        alicloud_zone: "{{ alicloud_zone }}"
-        vpc_id: "{{ created_vpc.vpc.id }}"
-        cidr_block: "{{ vsw_cidr }}"
-      register: created_vsw
-
-    - name: Create security group
-      ali_security_group:
-        group_name: cheshi-perf-group
-        alicloud_region: "{{ alicloud_region }}"
-        vpc_id: "{{ created_vpc.vpc.id }}"
-        rules:
-          - ip_protocol: tcp
-            port_range: 22/22
-            source_cidr_ip: 0.0.0.0/0
-            priority: 1
-      register: created_group
+        name_prefix: "{{ sg_name }}"
+        filters:
+          zone_id: "{{ alicloud_zone }}"
+      register: sg_facts
 
     - name: Create a set of instances
       ali_instance:
@@ -45,8 +33,8 @@
         allocate_public_ip: true
         internet_charge_type: PayByTraffic
         max_bandwidth_out: 5
-        vswitch_id: "{{ created_vsw.vswitch.id}}"
-        security_groups: "{{ created_group.group.id }}"
+        vswitch_id: "{{ vsw_facts.vswitches[0].id }}"
+        security_groups: "{{ sg_facts.groups[0].id }}"
         tags:
           Name: AnsiblePerfTest
         count: 1
