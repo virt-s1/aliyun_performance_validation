@@ -1,0 +1,8 @@
+cidr_block: 192.168.0.0/16
+vsw_cidr: 192.168.7.0/24
+alicloud_region: cn-beijing
+alicloud_zone: cn-beijing-g
+instance_name: cheshi-ansible-test
+instance_type: ecs.t5-lc1m1.small
+ami_id: m-2zec2l0mdfxbdu9cspmy
+key_name: cheshi-docker

@@ -1,0 +1,55 @@
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - ansible_vars.yml
+
+  tasks:
+    - name: Create VPC
+      ali_vpc:
+        vpc_name: cheshi-perf-vpc
+        alicloud_region: "{{ alicloud_region }}"
+        cidr_block: "{{ cidr_block }}"
+      register: created_vpc
+
+    - name: Create VSwitch
+      ali_vswitch:
+        vswitch_name: cheshi-perf-vswitch
+        alicloud_region: "{{ alicloud_region }}"
+        alicloud_zone: "{{ alicloud_zone }}"
+        vpc_id: "{{ created_vpc.vpc.id }}"
+        cidr_block: "{{ vsw_cidr }}"
+      register: created_vsw
+
+    - name: Create security group
+      ali_security_group:
+        group_name: cheshi-perf-group
+        alicloud_region: "{{ alicloud_region }}"
+        vpc_id: "{{ created_vpc.vpc.id }}"
+        rules:
+          - ip_protocol: tcp
+            port_range: 22/22
+            source_cidr_ip: 0.0.0.0/0
+            priority: 1
+      register: created_group
+
+    - name: Create a set of instances
+      ali_instance:
+        instance_name: "{{ instance_name }}"
+        alicloud_region: "{{ alicloud_region }}"
+        alicloud_zone: "{{ alicloud_zone }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        host_name: "{{ instance_name }}"
+        key_name: "{{ key_name }}"
+        allocate_public_ip: true
+        internet_charge_type: PayByTraffic
+        max_bandwidth_out: 5
+        vswitch_id: "{{ created_vsw.vswitch.id}}"
+        security_groups: "{{ created_group.group.id }}"
+        tags:
+          Name: AnsiblePerfTest
+        count: 1
+        count_tag:
+          Name: AnsiblePerfTest
+      register: create_instance

@@ -1,0 +1,11 @@
+# Ansible setup
+
+https://docs.ansible.com/ansible/latest/scenario_guides/guide_alicloud.html
+
+pip install ansible-alicloud
+pip install footmark
+
+export ALICLOUD_ACCESS_KEY="$(cat ~/.aliyun/config.json | jq -r '.profiles[0].access_key_id')"
+export ALICLOUD_SECRET_KEY="$(cat ~/.aliyun/config.json | jq -r '.profiles[0].access_key_secret')"
+
+

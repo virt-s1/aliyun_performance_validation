@@ -1,0 +1,22 @@
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - ansible_vars.yml
+
+  tasks:
+    - name: Release a set of instances
+      ali_instance:
+        instance_name: "{{ instance_name }}"
+        alicloud_region: "{{ alicloud_region }}"
+        alicloud_zone: "{{ alicloud_zone }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        host_name: "{{ instance_name }}"
+        key_name: "{{ key_name }}"
+        allocate_public_ip: true
+        internet_charge_type: PayByTraffic
+        max_bandwidth_out: 5
+        force: true
+        state: absent
+      register: release_instance
