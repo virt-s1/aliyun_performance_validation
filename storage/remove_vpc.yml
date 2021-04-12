@@ -1,0 +1,34 @@
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - ansible_vars.yml
+
+  tasks:
+    - name: Get VPC ID
+      ali_vpc_facts:
+        vpc_name: "{{ vpc_name }}"
+        alicloud_region: "{{ alicloud_region }}"
+      register: vpc_facts
+
+    - name: Remove security group
+      ali_security_group:
+        group_name: "{{ sg_name }}"
+        alicloud_region: "{{ alicloud_region }}"
+        vpc_id: "{{ vpc_facts.vpcs[0].vpc_id }}"
+        state: absent
+
+    - name: Remove VSwitch
+      ali_vswitch:
+        vswitch_name: "{{ vsw_name }}"
+        alicloud_region: "{{ alicloud_region }}"
+        vpc_id: "{{ vpc_facts.vpcs[0].vpc_id }}"
+        cidr_block: "{{ vsw_cidr }}"
+        state: absent
+
+    - name: Remove VPC
+      ali_vpc:
+        vpc_name: "{{ vpc_name }}"
+        alicloud_region: "{{ alicloud_region }}"
+        cidr_block: "{{ vpc_cidr }}"
+        state: absent
