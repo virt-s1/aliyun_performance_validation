@@ -29,4 +29,10 @@ ansible test -m script -a "./scripts/netperf_test.sh $ipaddrs"
 ansible test -m script -a "./scripts/netperf_test.sh $ipaddrs $ipaddrs"
 ansible test -m script -a "./scripts/netperf_test.sh $ipaddrs $ipaddrs $ipaddrs $ipaddrs"
 ansible test -m script -a "./scripts/netperf_test.sh $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs"
+ansible test -m script -a "./scripts/netperf_test.sh $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs"
+ansible test -m script -a "./scripts/netperf_test.sh $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs $ipaddrs"
+
+
+## Check the log
+ansible test -m command -a 'ls netperf_test_*.log'
 
