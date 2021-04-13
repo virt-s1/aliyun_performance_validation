@@ -2,10 +2,20 @@
 
 https://docs.ansible.com/ansible/latest/scenario_guides/guide_alicloud.html
 
+## Install modules
 pip install ansible-alicloud
 pip install footmark
 
+> ERROR! couldn't resolve module/action 'ali_vpc'.
+
+## Load credentials
 export ALICLOUD_ACCESS_KEY="$(cat ~/.aliyun/config.json | jq -r '.profiles[0].access_key_id')"
 export ALICLOUD_SECRET_KEY="$(cat ~/.aliyun/config.json | jq -r '.profiles[0].access_key_secret')"
 
+> Failed to describe VPCs: 'VPCConnection' object has no attribute 'FootmarkClientError'
 
+# workaround
+
+Issue when attach disk to the instance, change delete_with_instance and perform the playbook again.
+
+> Updating disk d-2zefv1zpnwshgmbmj4mq attribute is failed, error: HTTP Status: 400 Error:NoAttributeToModify No attribute to be modified in this request.
