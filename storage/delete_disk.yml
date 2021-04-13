@@ -7,12 +7,12 @@
   tasks:
     - name: Get Disk ID
       ali_disk_info:
-        alicloud_region: "{{ alicloud_region }}"
+        alicloud_region: "{{ global.alicloud_region }}"
         name_prefix: "{{ disk.disk_name }}"
       register: disk_facts
 
     - name: Delete disk
       ali_disk:
-        alicloud_region: "{{ alicloud_region }}"
+        alicloud_region: "{{ global.alicloud_region }}"
         disk_id: "{{ disk_facts.disk_ids[0] }}"
         state: absent

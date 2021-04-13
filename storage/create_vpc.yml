@@ -7,24 +7,24 @@
   tasks:
     - name: Create VPC
       ali_vpc:
-        vpc_name: "{{ vpc_name }}"
-        alicloud_region: "{{ alicloud_region }}"
-        cidr_block: "{{ vpc_cidr }}"
+        vpc_name: "{{ vpc.vpc_name }}"
+        alicloud_region: "{{ global.alicloud_region }}"
+        cidr_block: "{{ vpc.vpc_cidr }}"
       register: created_vpc
 
     - name: Create VSwitch
       ali_vswitch:
-        vswitch_name: "{{ vsw_name }}"
-        alicloud_region: "{{ alicloud_region }}"
-        alicloud_zone: "{{ alicloud_zone }}"
+        vswitch_name: "{{ vpc.vsw_name }}"
+        alicloud_region: "{{ global.alicloud_region }}"
+        alicloud_zone: "{{ global.alicloud_zone }}"
         vpc_id: "{{ created_vpc.vpc.id }}"
-        cidr_block: "{{ vsw_cidr }}"
+        cidr_block: "{{ vpc.vsw_cidr }}"
       register: created_vsw
 
     - name: Create security group
       ali_security_group:
-        group_name: "{{ sg_name }}"
-        alicloud_region: "{{ alicloud_region }}"
+        group_name: "{{ vpc.sg_name }}"
+        alicloud_region: "{{ global.alicloud_region }}"
         vpc_id: "{{ created_vpc.vpc.id }}"
         rules:
           - ip_protocol: tcp
