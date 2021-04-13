@@ -6,6 +6,12 @@ sg_name: cheshi-perf-group
 alicloud_region: cn-beijing
 alicloud_zone: cn-beijing-g
 instance_name: cheshi-ansible-test
-instance_type: ecs.t5-lc1m1.small
+instance_type: ecs.re6p.large
 ami_id: m-2zec2l0mdfxbdu9cspmy
 key_name: cheshi-docker
+disk:
+  provision: yes
+  disk_name: cheshi-perf-disk
+  disk_size: 40
+  disk_category: cloud_essd
+  delete_with_instance: true

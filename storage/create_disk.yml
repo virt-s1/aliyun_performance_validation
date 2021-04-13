@@ -1,0 +1,16 @@
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - ansible_vars.yml
+
+  tasks:
+    - name: Create disk
+      ali_disk:
+        disk_name: "{{ disk.disk_name }}"
+        alicloud_region: "{{ alicloud_region }}"
+        alicloud_zone: "{{ alicloud_zone }}"
+        size: "{{ disk.disk_size }}"
+        disk_category: "{{ disk.disk_category }}"
+        disk_tags:
+          - Name: AnsiblePerfTest

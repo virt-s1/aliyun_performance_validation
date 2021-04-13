@@ -1,0 +1,25 @@
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - ansible_vars.yml
+
+  tasks:
+    - name: Get Disk ID
+      ali_disk_info:
+        alicloud_region: "{{ alicloud_region }}"
+        name_prefix: "{{ disk.disk_name }}"
+      register: disk_facts
+
+    - name: Get Instance ID
+      ali_instance_info:
+        alicloud_region: "{{ alicloud_region }}"
+        name_prefix: "{{ instance_name }}"
+      register: instances_facts
+
+    - name: Attach disk to instance
+      ali_disk:
+        alicloud_region: "{{ alicloud_region }}"
+        disk_id: "{{ disk_facts.disks[0].id }}"
+        instance_id: "{{ instances_facts.instances[0].id }}"
+        delete_with_instance: "{{ disk.delete_with_instance }}"
