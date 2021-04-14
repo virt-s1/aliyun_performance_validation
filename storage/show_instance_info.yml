@@ -1,0 +1,16 @@
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - ansible_vars.yml
+
+  tasks:
+    - name: Get Instance Info
+      ali_instance_info:
+        alicloud_region: "{{ global.alicloud_region }}"
+        name_prefix: "{{ instance.instance_name }}"
+      register: instances_facts
+
+    - name: Show Instance Info
+      debug:
+        var: instances_facts
