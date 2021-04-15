@@ -36,9 +36,18 @@ function print() {
 }
 
 # Main
-logdir=$HOME/workspace/log
+if [ -d $1 ]; then
+    logdir=$1
+else
+    logdir=$HOME/workspace/log
+fi
 cd $logdir || exit 1
-flavor=$(curl http://100.100.100.200/latest/meta-data/instance/instance-type)
+
+if [ ! -z $2 ]; then
+    flavor=$2
+else
+    flavor=$(curl http://100.100.100.200/latest/meta-data/instance/instance-type)
+fi
 output=$logdir/summary-${flavor:-unknown}.log
 
 for log in $(ls fio-*.log); do
