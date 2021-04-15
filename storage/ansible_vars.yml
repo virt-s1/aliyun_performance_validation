@@ -10,6 +10,7 @@ vpc:
 instance:
   instance_name: cheshi-ansible-test
   instance_type: ecs.re6p.large
+  system_disk_category: cloud_essd
   ami_id: m-2zec2l0mdfxbdu9cspmy
   key_name: cheshi-docker
 disk:
