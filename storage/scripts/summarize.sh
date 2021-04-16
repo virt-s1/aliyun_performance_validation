@@ -35,25 +35,56 @@ function print() {
         -N "Flavor,RW,BS,IODepth,Numjobs,IOPS,BW(MiB/s),Lat(ms),Logfile"
 }
 
+function show_usage() {
+    echo "Analyse fio json outputs and summarize the report."
+    echo "$(basename $0) [-l LOGDIR] [-f FILENAME]"
+    echo "-l: The directory with fio json output files."
+    echo "    Will use '~/workspace/log/' than '.' if not specified."
+    echo "-f: The filename of the report. Will use STDOUT if not specified."
+}
+
+while getopts :hl:f: ARGS; do
+    case $ARGS in
+    h)
+        # Help option
+        show_usage
+        exit 0
+        ;;
+    l)
+        # Logdir option
+        logdir=$OPTARG
+        ;;
+    f)
+        # Filename option
+        filename=$OPTARG
+        ;;
+    "?")
+        echo "$(basename $0): unknown option: $OPTARG" >&2
+        ;;
+    ":")
+        echo "$(basename $0): option requires an argument -- '$OPTARG'" >&2
+        echo "Try '$(basename $0) -h' for more information." >&2
+        exit 1
+        ;;
+    *)
+        # Unexpected errors
+        echo "$(basename $0): unexpected error -- $ARGS" >&2
+        echo "Try '$(basename $0) -h' for more information." >&2
+        exit 1
+        ;;
+    esac
+done
+
+if [ -z $logdir ]; then
+    [ -d $HOME/workspace/log ] && logdir=$HOME/workspace/log || logdir=$PWD
+fi
+
 # Main
-if [ -d $1 ]; then
-    logdir=$1
-else
-    logdir=$HOME/workspace/log
-fi
 cd $logdir || exit 1
-
-if [ ! -z $2 ]; then
-    flavor=$2
-else
-    flavor=$(curl http://100.100.100.200/latest/meta-data/instance/instance-type)
-fi
-output=$logdir/summary-${flavor:-unknown}.log
-
 for log in $(ls fio-*.log); do
     analyse $log
 done
 
-print | tee $output
+[ -z $filename ] && print || print >$filename
 
 exit 0
