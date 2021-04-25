@@ -1,21 +1,21 @@
 global:
   alicloud_region: cn-beijing
-  alicloud_zone: cn-beijing-g
+  alicloud_zone: cn-beijing-h
 vpc:
   vpc_name: cheshi-perf-vpc
   vpc_cidr: 192.168.0.0/16
   vsw_name: cheshi-perf-vswitch
-  vsw_cidr: 192.168.7.0/24
+  vsw_cidr: 192.168.8.0/24
   sg_name: cheshi-perf-group
 instance:
   instance_name: cheshi-ansible-test
-  instance_type: ecs.re6p.large
+  instance_type: ecs.c6e.xlarge
   system_disk_category: cloud_essd
   ami_id: m-2zec2l0mdfxbdu9cspmy
   key_name: cheshi-docker
 disk:
   provision: yes
   disk_name: cheshi-perf-disk
-  disk_size: 40
+  disk_size: 5000
   disk_category: cloud_essd
-  delete_with_instance: true
+  delete_with_instance: false
