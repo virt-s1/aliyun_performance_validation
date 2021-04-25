@@ -29,6 +29,12 @@ The ali_disk module doesn't support specifing the performance level.
 
 > PL1 is used in stead of PL3 for 10TiB disks.
 
+Don't know why. Add the following config into ansible.cfg?
+`[ssh_connection]\nssh_args="-C -o ControlMaster=auto`
+
+> fatal: [39.106.61.201]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Connection timed out during banner exchange", "unreachable": true}
+
+
 # Environment
 
 ## Cloud Disk
@@ -54,10 +60,36 @@ ansible-playbook ./attach_disk.yml
 
 ./update_inventory.sh
 ansible-playbook ./run_storage_test.yml
+./scripts/summarize.sh -l ./logs
 ls -latr ./logs
 
 ansible-playbook ./detach_disk.yml
 ansible-playbook ./delete_disk.yml
 ansible-playbook ./release_instances.yml && sleep 30
+ansible-playbook ./remove_vpc.yml
+```
+
+```
+# prepare
+ansible-playbook ./create_vpc.yml
+ansible-playbook ./create_disk.yml
+
+# create
+ansible-playbook ./create_instances.yml
+sleep 600
+ansible-playbook ./attach_disk.yml
+
+# test
+./update_inventory.sh
+ansible-playbook ./run_storage_test.yml
+./scripts/summarize.sh -l ./logs
+
+# destroy
+ansible-playbook ./detach_disk.yml
+ansible-playbook ./release_instances.yml
+
+# teardown
+ansible-playbook ./delete_disk.yml
+sleep 20
 ansible-playbook ./remove_vpc.yml
 ```
