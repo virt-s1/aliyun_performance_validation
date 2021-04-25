@@ -16,7 +16,7 @@ function analyse() {
 
     iops_r=$(cat $file | jq -r '.jobs[0].read.iops')
     iops_w=$(cat $file | jq -r '.jobs[0].write.iops')
-    iops=$(echo "$iops_r + $iops_w" | bc)
+    iops=$(echo "($iops_r + $iops_w) / 1" | bc)
 
     bw_r=$(cat $file | jq -r '.jobs[0].read.bw')
     bw_w=$(cat $file | jq -r '.jobs[0].write.bw')
