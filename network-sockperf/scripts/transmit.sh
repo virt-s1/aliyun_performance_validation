@@ -5,13 +5,15 @@
 
 function show_usage() {
     echo "Run sockperf test."
-    echo "$(basename $0) <-s SERVERIP> [-p BASEPORT] [-t TIMEOUT]"
-    echo "SERVERIP: The server's IP address."
-    echo "BASEPORT: The ports start from (default=6000)."
-    echo " TIMEOUT: The interval of the test (default=30)."
+    echo "$(basename $0) <-s SERVERIP> [-p BASEPORT] [-t TIMEOUT] [-d DUPLICATES]"
+    echo "  SERVERIP: The server's IP address."
+    echo "  BASEPORT: The ports start from (default=10000)."
+    echo "   TIMEOUT: The interval of the test (default=30)."
+    echo "DUPLICATES: The duplicates of the test (default=1)."
+
 }
 
-while getopts :hs:p:t: ARGS; do
+while getopts :hs:p:t:d: ARGS; do
     case $ARGS in
     h)
         # Help option
@@ -29,6 +31,10 @@ while getopts :hs:p:t: ARGS; do
     t)
         # timeout option
         timeout=$OPTARG
+        ;;
+    d)
+        # duplicates option
+        duplicates=$OPTARG
         ;;
     "?")
         echo "$(basename $0): unknown option: $OPTARG" >&2
@@ -52,8 +58,9 @@ if [ -z $serverip ]; then
     exit 1
 fi
 
-: ${baseport:=6000}
+: ${baseport:=10000}
 : ${timeout:=30}
+: ${duplicates:=1}
 
 # Main
 killall -q sockperf
@@ -65,14 +72,17 @@ echo "cpu_core=$cpu_core"
 echo "serverip=$serverip"
 echo "baseport=$baseport"
 echo "timeout=$timeout"
+echo "duplicates=$duplicates"
 
-for ((i = 0; i < $cpu_core; i++)); do
-    port=$(($baseport + $i))
-    echo "Starting test on port $port..."
-    sockperf tp -i $serverip --client_port $port --pps max -m 14 \
-        -t $timeout --port $port &>/tmp/sockperf.log.$i &
+for ((n = 0; n < $duplicates; n++)); do
+    for ((i = 0; i < $cpu_core; i++)); do
+        port=$(($baseport + $n * 1000 + $i))
+        echo "Starting test on port $port..."
+        sockperf tp -i $serverip --client_port $port --pps max -m 14 \
+            -t $timeout --port $port &>/tmp/sockperf.log.$i &
+    done
 done
 
 wait
 
-grep ^ /tmp/sockperf.log.*
+grep ^ /tmp/sockperf.log.* 2>/dev/null
