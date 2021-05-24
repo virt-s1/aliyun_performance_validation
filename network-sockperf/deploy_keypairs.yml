@@ -1,0 +1,37 @@
+---
+- hosts: test
+  tasks:
+    - name: Create keypair
+      openssh_keypair:
+        path: ~/.ssh/id_ssh_rsa
+        type: rsa
+        force: false
+
+    - name: Add ssh config
+      copy:
+        src: ./files/06-ansible.conf
+        dest: /etc/ssh/ssh_config.d/06-ansible.conf
+        mode: '0644'
+
+    - name: Get public key
+      command: cat ~/.ssh/id_ssh_rsa.pub
+      register: command_result
+      changed_when: no
+
+    - name: Set fact
+      set_fact:
+        pubkey: "{{ command_result.stdout }}"
+
+- hosts: peers
+  tasks:
+    - name: Show public key
+      debug:
+        var: hostvars.test.pubkey
+
+    - name: Config authorized_keys
+      lineinfile:
+        path: ~/.ssh/authorized_keys
+        line: "{{ hostvars.test.pubkey }}"
+        create: yes
+        mode: '0600'
+
