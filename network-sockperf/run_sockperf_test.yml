@@ -1,0 +1,46 @@
+- hosts: all
+
+  vars:
+    local_bin: "./scripts"
+    remote_logdir: "~/workspace/log"
+    local_logdir: "./logs"
+
+  tasks:
+    - name: Install packages
+      package:
+        name:
+          - sysstat
+        state: present
+
+    - name: Enable service
+      service:
+        name: sysstat
+        state: started
+
+    - name: Create log path
+      file:
+        path: "{{ remote_logdir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Run test script
+      script:
+        cmd: "{{ local_bin }}/transmit.sh -s 192.168.8.27 &> {{ remote_logdir }}/transmit.log"
+
+    # - name: Run summarize script
+    #   script:
+    #     cmd: "{{ local_bin }}/summarize.sh > {{ remote_logdir }}/summary.log"
+
+    - name: Find logs
+      find:
+        paths: "{{ remote_logdir }}"
+        patterns: "*.log"
+        recurse: no
+      register: targets
+
+    - name: Fetch logs
+      fetch:
+        src: "{{ item.path }}"
+        dest: "{{ local_logdir }}/"
+        flat: no
+      with_items: "{{ targets.files }}"
