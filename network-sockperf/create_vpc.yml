@@ -1,0 +1,34 @@
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - ansible_vars.yml
+
+  tasks:
+    - name: Create VPC
+      ali_vpc:
+        vpc_name: "{{ vpc.vpc_name }}"
+        alicloud_region: "{{ global.alicloud_region }}"
+        cidr_block: "{{ vpc.vpc_cidr }}"
+      register: created_vpc
+
+    - name: Create VSwitch
+      ali_vswitch:
+        vswitch_name: "{{ vpc.vsw_name }}"
+        alicloud_region: "{{ global.alicloud_region }}"
+        alicloud_zone: "{{ global.alicloud_zone }}"
+        vpc_id: "{{ created_vpc.vpc.id }}"
+        cidr_block: "{{ vpc.vsw_cidr }}"
+      register: created_vsw
+
+    - name: Create security group
+      ali_security_group:
+        group_name: "{{ vpc.sg_name }}"
+        alicloud_region: "{{ global.alicloud_region }}"
+        vpc_id: "{{ created_vpc.vpc.id }}"
+        rules:
+          - ip_protocol: tcp
+            port_range: 22/22
+            source_cidr_ip: 0.0.0.0/0
+            priority: 1
+      register: created_group
