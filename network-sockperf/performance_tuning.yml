@@ -1,0 +1,27 @@
+- name: Performance tuning
+  hosts: all
+  vars:
+    tarball: "./files/sockperf-3.7.tar.gz"
+    extract_name: "sockperf-3.7"
+  tasks:
+    - name: Enable irqbalance service
+      service:
+        name: irqbalance
+        state: started
+
+    - name: Get IOMMU status
+      shell: dmesg | grep -E "DMAR|IOMMU"
+      register: command_result
+      ignore_errors: yes
+      changed_when: no
+
+    - block:
+        - name: Disable IOMMU
+          command: grubby --update-kernel=ALL --args="intel_iommu=off"
+        - name: Restart managed host
+          reboot:
+            msg: "Ansible rebooting system for disabling IOMMU."
+      when: "'IOMMU disabled' not in command_result.stdout"
+
+    # - name: Enable NIC multiple queue
+    #   script: ./scripts/config_nic_queues.sh optimized
