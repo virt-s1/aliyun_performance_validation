@@ -1,0 +1,51 @@
+- name: Installed sockperf
+  hosts: all
+  vars:
+    tarball: "./files/sockperf-3.7.tar.gz"
+    extract_name: "sockperf-3.7"
+  tasks:
+    - name: Create temp folder for installation
+      file:
+        path: /tmp/perftest-setup
+        state: directory
+        mode: "0755"
+
+    - name: Install packages
+      package:
+        name:
+          - make
+          - automake
+          - autoconf
+          - gcc-c++
+          - gcc
+          - perl
+          - m4
+        state: present
+
+    - name: Extract tarball
+      unarchive:
+        src: "{{ tarball }}"
+        dest: /tmp/perftest-setup/
+
+    - name: Install sockperf (autogen.sh)
+      command: ./autogen.sh
+      args:
+        chdir: /tmp/perftest-setup/{{ extract_name }}
+
+    - name: Install sockperf (configure)
+      command: ./configure
+      args:
+        chdir: /tmp/perftest-setup/{{ extract_name }}
+
+    - name: Install sockperf (make)
+      command: make
+      args:
+        chdir: /tmp/perftest-setup/{{ extract_name }}
+
+    - name: Install sockperf (make install)
+      command: make install
+      args:
+        chdir: /tmp/perftest-setup/{{ extract_name }}
+
+    - name: Verify installation
+      command: sockperf --version
