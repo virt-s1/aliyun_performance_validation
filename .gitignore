@@ -1,3 +1,4 @@
 ansible.log
-network/manual
+network-netperf/manual
 storage/logs
+inventory
