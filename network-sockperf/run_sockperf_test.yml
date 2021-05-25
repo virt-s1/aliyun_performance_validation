@@ -9,10 +9,10 @@
 
 - hosts: test
   vars:
-    local_bin: "./scripts/"
-    local_log: "./logs/"
-    remote_bin: "~/workspace/"
-    remote_log: "~/workspace/log/"
+    local_bin: "./scripts"
+    local_log: "./logs"
+    remote_bin: "~/workspace"
+    remote_log: "~/workspace/log"
 
   tasks:
     - name: Create folders
@@ -26,9 +26,12 @@
 
     - name: Deliver scripts to server
       copy:
-        src: "{{ local_bin }}"
+        src: "{{ local_bin }}/{{ item }}"
         dest: "{{ remote_bin }}"
         mode: "0755"
+      with_items:
+        - master.sh
+        - transmit.sh
 
     - name: Install sysstat package
       package:
@@ -44,18 +47,15 @@
     - name: Run test
       command: "{{ remote_bin }}/master.sh -c '192.168.8.29 192.168.8.28'"
 
-    # # - name: Run summarize script
-    # #   script:
-    # #     cmd: "{{ local_bin }}/summarize.sh > {{ remote_log }}/summary.log"
-    # - name: Find logs
-    #   find:
-    #     paths: "{{ remote_log }}"
-    #     patterns: "*.log"
-    #     recurse: no
-    #   register: targets
-    # - name: Fetch logs
-    #   fetch:
-    #     src: "{{ item.path }}"
-    #     dest: "{{ local_log }}/"
-    #     flat: no
-    #   with_items: "{{ targets.files }}"
+    - name: Find logs
+      find:
+        paths: "{{ remote_log }}"
+        patterns: "*.tar.gz"
+      register: targets
+
+    - name: Fetch logs
+      fetch:
+        src: "{{ item.path }}"
+        dest: "{{ local_log }}/"
+        flat: yes
+      with_items: "{{ targets.files }}"
