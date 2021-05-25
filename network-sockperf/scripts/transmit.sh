@@ -1,16 +1,15 @@
 #!/bin/bash
 
-# Description: Run sockperf test.
+# Description: Generate workloads by sockperf.
 # Maintainer: Charles Shih <schrht@gmail.com>
 
 function show_usage() {
-    echo "Run sockperf test."
+    echo "Generate workloads by sockperf."
     echo "$(basename $0) <-s SERVERIP> [-p BASEPORT] [-t TIMEOUT] [-d DUPLICATES]"
     echo "  SERVERIP: The server's IP address."
     echo "  BASEPORT: The ports start from (default=10000)."
     echo "   TIMEOUT: The interval of the test (default=30)."
     echo "DUPLICATES: The duplicates of the test (default=1)."
-
 }
 
 while getopts :hs:p:t:d: ARGS; do
@@ -53,7 +52,7 @@ while getopts :hs:p:t:d: ARGS; do
     esac
 done
 
-if [ -z $serverip ]; then
+if [ -z "$serverip" ]; then
     show_usage
     exit 1
 fi
@@ -67,22 +66,27 @@ killall -q sockperf
 rm -f /tmp/sockperf.log.*
 
 cpu_core=$(cat /proc/cpuinfo | grep process | wc -l)
+flavor=$(curl http://100.100.100.200/latest/meta-data/instance/instance-type 2>/dev/null)
 
+echo "---"
+echo "flavor=$flavor"
 echo "cpu_core=$cpu_core"
 echo "serverip=$serverip"
 echo "baseport=$baseport"
 echo "timeout=$timeout"
 echo "duplicates=$duplicates"
+echo "---"
 
 for ((n = 0; n < $duplicates; n++)); do
     for ((i = 0; i < $cpu_core; i++)); do
         port=$(($baseport + $n * 1000 + $i))
         echo "Starting test on port $port..."
         sockperf tp -i $serverip --client_port $port --pps max -m 14 \
-            -t $timeout --port $port &>/tmp/sockperf.log.$i &
+            -t $timeout --port $port &>/tmp/sockperf.log.$port &
     done
 done
 
 wait
 
+echo "---"
 grep ^ /tmp/sockperf.log.* 2>/dev/null
