@@ -98,12 +98,15 @@ wait # waiting for clients
 
 # Analyse
 links=$(($client_num * $cpu_core * $duplicates))
-links_detail="(=$client_num*$cpu_core*$duplicates)"
+links_detail="$client_num/$cpu_core/$duplicates"
 rxpckps=$(sar -n DEV -f $sa_pps | grep "Average.*$NIC" | awk '{print $3}')
 
 # Dump results
-logfile=$logdir/sockperf_${flavor}_${timestamp}.log
-printf "%-20s %-4s %-5s %-15s %-8s %-15s\n" \
-    Flavor CPU# Links "(=CLT*CPU*DUP)" Duration PPSrx >>$logfile
-printf "%-20s %-4s %-5s %-15s %-8s %-15s\n" \
+logfile=$logdir/sockperf_${flavor}_${timestamp}.txt
+printf "%-20s %-4s %-5s %-11s %-8s %-15s\n" \
+    Flavor CPU# Links "CLT/CPU/DUP" Duration PPSrx >>$logfile
+printf "%-20s %-4s %-5s %-11s %-8s %-15s\n" \
     $flavor $cpu_core $links "$links_detail" $timeout $rxpckps >>$logfile
+
+tarfile=$LOGPATH/sockperf_${flavor}_${timestamp}.tar.gz
+cd $logdir && tar -zcvf $tarfile *.sa *.log *.txt
