@@ -24,9 +24,9 @@
       script:
         cmd: "{{ local_bin }}/test100w.sh &> {{ remote_logdir }}/test100w.log"
 
-    - name: Run summarize script
-      script:
-        cmd: "{{ local_bin }}/summarize.sh > {{ remote_logdir }}/summary.log"
+    # - name: Run summarize script
+    #   script:
+    #     cmd: "{{ local_bin }}/summarize.sh > {{ remote_logdir }}/summary.log"
 
     - name: Find logs
       find:
