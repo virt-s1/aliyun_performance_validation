@@ -39,9 +39,12 @@ Don't know why. Add the following config into ansible.cfg?
 
 ## Cloud Disk
 
-ESSD PL3 5TB=240k
-ESSD PL3 10TB=480k
-ESSD PL3 20TB=1000k
+Disk      TiB  GiB    IOPS     Test
+ESSD-PL3  5    5120   257800   250k
+ESSD-PL3  6    6144   309000   300k
+ESSD-PL3  10   10240  513800   500k
+ESSD-PL3  20   20480  1000000  1m
+
 
 ## Test methodology
 
