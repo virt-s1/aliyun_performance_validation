@@ -13,5 +13,11 @@ instance:
   system_disk_category: cloud_essd
   ami_id: m-2zec2l0mdfxbdu9cspmy
   key_name: cheshi-docker
-  count: 3
-
+  count: 5
+sockperf_test:
+  pps_run: yes
+  pps_duration: 30
+  pps_duplicates: 4
+  bw_run: yes
+  bw_duration: 30
+  bw_duplicates: 1

@@ -1,18 +1,18 @@
 ---
-# - hosts: all
-#   tasks:
-#     - name: Create folders
-#       file:
-#         path: ~/workspace/log
-#         state: directory
-#         mode: "0755"
+- hosts: all
+  gather_facts: yes
 
 - hosts: test
+  vars_files:
+    - ansible_vars.yml
   vars:
     local_bin: "./scripts"
     local_log: "./logs"
     remote_bin: "~/workspace"
     remote_log: "~/workspace/log"
+    client_ips: "{{ groups['peers'] | \
+      map('extract', hostvars, ['ansible_eth0', 'ipv4', 'address']) | \
+      join(' ') }}"
 
   tasks:
     - name: Create folders
@@ -44,8 +44,19 @@
         name: sysstat
         state: started
 
-    - name: Run test
-      command: "{{ remote_bin }}/master.sh -c '192.168.8.29 192.168.8.28'"
+    - name: Show client IPs
+      debug:
+        msg: "Client IPs: '{{ client_ips }}'"
+
+    - name: Run test (PPS)
+      command: "{{ remote_bin }}/master.sh -m pps -c '{{ client_ips }}' \
+        -d {{ sockperf_test.pps_duplicates }} -t {{ sockperf_test.pps_duration }}"
+      when: sockperf_test.pps_run is true
+
+    - name: Run test (BW)
+      command: "{{ remote_bin }}/master.sh -m bw -c '{{ client_ips }}' \
+        -d {{ sockperf_test.bw_duplicates }} -t {{ sockperf_test.bw_duration }}"
+      when: sockperf_test.bw_run is true
 
     - name: Find logs
       find:
