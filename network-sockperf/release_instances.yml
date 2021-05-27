@@ -1,0 +1,14 @@
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - ansible_vars.yml
+
+  tasks:
+    - name: Release a set of instances
+      ali_instance:
+        instance_name: "{{ instance.instance_name }}"
+        alicloud_region: "{{ global.alicloud_region }}"
+        force: true
+        state: absent
+      register: release_instance
