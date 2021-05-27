@@ -5,18 +5,23 @@
 
 function show_usage() {
     echo "Schedule test and analyse data on server."
-    echo "$(basename $0) <-c CLIENTS> [-t TIMEOUT] [-d DUPLICATES]"
+    echo "$(basename $0) <-m TESTMODE> <-c CLIENTS> [-t TIMEOUT] [-d DUPLICATES]"
+    echo "  TESTMODE: The test mode to perform (pps|bw)."
     echo "   CLIENTS: The list of clients' IP address."
     echo "   TIMEOUT: The interval of the test (default=30)."
     echo "DUPLICATES: The duplicates of the test (default=1)."
 }
 
-while getopts :hc:t:d: ARGS; do
+while getopts :hm:c:t:d: ARGS; do
     case $ARGS in
     h)
         # Help option
         show_usage
         exit 0
+        ;;
+    m)
+        # testmode option
+        testmode=$OPTARG
         ;;
     c)
         # clients option
@@ -47,6 +52,15 @@ while getopts :hc:t:d: ARGS; do
     esac
 done
 
+if [ -z "$testmode" ]; then
+    show_usage
+    exit 1
+elif [ "$testmode" != "pps" ] and [ "$testmode" != "bw" ]; then
+    echo "Unknown TESTMODE: $testmode"
+    show_usage
+    exit 1
+fi
+
 if [ -z "$clients" ]; then
     show_usage
     exit 1
@@ -58,22 +72,26 @@ fi
 NIC=eth0
 BINPATH=~/workspace
 LOGPATH=~/workspace/log
+BASEPORT=10000
 
 # Main
 hostip=$(ifconfig $NIC | grep -w inet | awk '{print $2}')
 flavor=$(curl http://100.100.100.200/latest/meta-data/instance/instance-type 2>/dev/null)
 cpu_core=$(cat /proc/cpuinfo | grep process | wc -l)
+os=$(source /etc/os-release && echo ${ID}-${VERSION_ID})
 timestamp=$(date +D%y%m%dT%H%M%S)
 
 echo "hostip=$hostip"
 echo "flavor=$flavor"
 echo "clients=$clients"
+echo "baseport=$BASEPORT"
 echo "timeout=$timeout"
 echo "cpu_core=$cpu_core"
 echo "duplicates=$duplicates"
+echo "os=$os"
 echo "timestamp=$timestamp"
 
-logdir=$LOGPATH/sockperf_${flavor}_${timestamp}
+logdir=$LOGPATH/sockperf_${flavor}_${os}_${timestamp}
 mkdir -p $logdir
 
 for client in $clients; do
@@ -81,32 +99,49 @@ for client in $clients; do
     scp $BINPATH/transmit.sh root@$client:/tmp/ || exit 1
 done
 
+if [ "$testmode" = "bw" ]; then
+    # Start sockperf server for TCP throughput test
+    killall -q sockperf
+    for ((n = 0; n < $duplicates; n++)); do
+        for ((i = 0; i < $cpu_core; i++)); do
+            port=$(($BASEPORT + $n * 1000 + $i))
+            echo "Listening on port $port..."
+            sockperf sr --tcp -i $hostip --port $port &
+        done
+    done
+    # Schedule sockperf server to stop
+    sleep $(($timeout + 50)) && killall -q sockperf &
+fi
+
+# Trigger workload
 client_num=0
 for client in $clients; do
     client_num=$((client_num + 1))
     echo "Starting test from client $client..."
-    log=$logdir/transmit_${flavor}_${client}.log
-    ssh root@$client "/tmp/transmit.sh -s $hostip \
-        -d $duplicates -t $(($timeout + 40))" &>$log &
+    log=$logdir/transmit_${flavor}_${os}_${client}.log
+    ssh root@$client "/tmp/transmit.sh -m $testmode -s $hostip \
+        -p $BASEPORT -d $duplicates -t $(($timeout + 40))" &>$log &
 done
 
-# Start data collection
-sa_pps=$logdir/master_${flavor}_pps.sa
+# Collect data
+safile=$logdir/master_${flavor}_${os}_${timestamp}.sa
 sleep 20 # ramp time
-sar -A 1 $timeout -o $sa_pps &>/dev/null
+sar -A 1 $timeout -o $safile &>/dev/null
 wait # waiting for clients
 
-# Analyse
-links=$(($client_num * $cpu_core * $duplicates))
-links_detail="$client_num/$cpu_core/$duplicates"
-rxpckps=$(sar -n DEV -f $sa_pps | grep "Average.*$NIC" | awk '{print $3}')
+# Analyse data
+links=$(cat $logdir/transmit_*.log | grep -c 'sockperf: Starting test...')
+rxpckps=$(sar -n DEV -f $safile | grep "Average.*$NIC" | awk '{print $3}')
+rxkpps=$(echo "scale=2; ${rxpckps:-0} / 1000" | bc)
+rxkBps=$(sar -n DEV -f $safile | grep "Average.*$NIC" | awk '{print $5}')
+rxGbps=$(echo "scale=2; ${rxkBps:-0} * 8 / 1000000" | bc)
 
 # Dump results
-logfile=$logdir/sockperf_${flavor}_${timestamp}.txt
-printf "%-20s %-4s %-5s %-11s %-8s %-15s\n" \
-    Flavor CPU# Links "CLT/CPU/DUP" Duration PPSrx >>$logfile
-printf "%-20s %-4s %-5s %-11s %-8s %-15s\n" \
-    $flavor $cpu_core $links "$links_detail" $timeout $rxpckps >>$logfile
+logfile=$logdir/sockperf_${flavor}_${os}_${timestamp}.txt
+echo "
+Flavor  OS  Mode          CLT         CPU       DUP         Links    Duration PPSrx(k)  BWrx(Bb/s)
+$flavor $os ${testmode^^} $client_num $cpu_core $duplicates ${links} $timeout ${rxkpps} ${rxGbps}
+" | column -t >$logfile
 
-tarfile=$LOGPATH/sockperf_${flavor}_${timestamp}.tar.gz
+tarfile=$LOGPATH/sockperf_${flavor}_${os}_${timestamp}.tar.gz
 cd $logdir && tar -zcvf $tarfile *.sa *.log *.txt
