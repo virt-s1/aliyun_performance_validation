@@ -55,7 +55,7 @@ done
 if [ -z "$testmode" ]; then
     show_usage
     exit 1
-elif [ "$testmode" != "pps" ] and [ "$testmode" != "bw" ]; then
+elif [ "$testmode" != "pps" ] && [ "$testmode" != "bw" ]; then
     echo "Unknown TESTMODE: $testmode"
     show_usage
     exit 1
@@ -139,9 +139,12 @@ rxGbps=$(echo "scale=2; ${rxkBps:-0} * 8 / 1000000" | bc)
 # Dump results
 logfile=$logdir/sockperf_${flavor}_${os}_${timestamp}.txt
 echo "
-Flavor  OS  Mode          CLT         CPU       DUP         Links    Duration PPSrx(k)  BWrx(Bb/s)
+Flavor  OS  Mode          CLT         CPU       DUP         Links    Duration PPSrx(k)  BWrx(Gb/s)
 $flavor $os ${testmode^^} $client_num $cpu_core $duplicates ${links} $timeout ${rxkpps} ${rxGbps}
 " | column -t >$logfile
 
 tarfile=$LOGPATH/sockperf_${flavor}_${os}_${timestamp}.tar.gz
 cd $logdir && tar -zcvf $tarfile *.sa *.log *.txt
+
+echo "---"
+cat $logfile
