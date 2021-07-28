@@ -1,6 +1,7 @@
-test ansible_host=101.37.78.242
-
+[tests]
+test ansible_host=39.107.121.85 private_ip=192.168.8.20
 [peers]
-peer1 ansible_host=121.199.47.95
-peer2 ansible_host=120.55.100.241
-
+peer1 ansible_host=60.205.220.106 private_ip=192.168.8.23
+peer2 ansible_host=39.106.23.48 private_ip=192.168.8.24
+peer3 ansible_host=39.106.107.215 private_ip=192.168.8.21
+peer4 ansible_host=39.107.122.74 private_ip=192.168.8.22
