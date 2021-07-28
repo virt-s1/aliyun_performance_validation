@@ -9,7 +9,7 @@ vpc:
   sg_name: cheshi-perf-group
 instance:
   instance_name: cheshi-ansible-test
-  instance_type: ecs.c6e.xlarge
+  instance_type: ecs.ebmc6e.26xlarge
   system_disk_category: cloud_essd
   ami_id: m-2zec2l0mdfxbdu9cspmy
   key_name: cheshi-docker

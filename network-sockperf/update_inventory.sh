@@ -9,6 +9,7 @@ inventory=./inventory
 tmpfolder=/tmp/ansible_update_inventory
 region_id=$(cat $yaml_vars | shyaml -q get-value global.alicloud_region)
 instance_name=$(cat $yaml_vars | shyaml -q get-value instance.instance_name)
+mkdir -p $tmpfolder
 ansible localhost -m ali_instance_info \
     -a "alicloud_region=$region_id name_prefix=$instance_name" \
     --tree $tmpfolder &>$tmpfolder/ali_instance_info.log
