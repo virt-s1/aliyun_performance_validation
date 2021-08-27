@@ -34,6 +34,11 @@ Don't know why. Add the following config into ansible.cfg?
 
 > fatal: [39.106.61.201]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Connection timed out during banner exchange", "unreachable": true}
 
+footmark latest version (1.20.0) can not work with the latest Python (3.9) #296
+https://github.com/alibaba/alibaba.alicloud/issues/296
+
+> error: __init__() got an unexpected keyword argument 'encoding'
+
 
 # Environment
 
