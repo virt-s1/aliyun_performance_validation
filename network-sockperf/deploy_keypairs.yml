@@ -7,11 +7,24 @@
         type: rsa
         force: false
 
-    - name: Add ssh config
+    - name: Check that the ssh_config.d exists
+      stat:
+        path: /etc/ssh/ssh_config.d
+      register: stat_result
+
+    - name: Add ssh config (in ssh_config.d)
       copy:
         src: ./files/06-ansible.conf
         dest: /etc/ssh/ssh_config.d/06-ansible.conf
-        mode: '0644'
+        mode: "0644"
+      when: stat_result.stat.exists
+
+    - name: Add ssh config (in ssh_config file)
+      copy:
+        src: ./files/06-ansible.conf
+        dest: /etc/ssh/ssh_config
+        mode: "0644"
+      when: not stat_result.stat.exists
 
     - name: Get public key
       command: cat ~/.ssh/id_ssh_rsa.pub
@@ -33,5 +46,4 @@
         path: ~/.ssh/authorized_keys
         line: "{{ hostvars.test.pubkey }}"
         create: yes
-        mode: '0600'
-
+        mode: "0600"
