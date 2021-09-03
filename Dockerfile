@@ -17,10 +17,10 @@ WORKDIR /root/workspace
 
 # install basic packages
 RUN dnf install -y jq psmisc findutils \
-    which ncurses tree procps-ng
+    which ncurses tree procps-ng shyaml
 
 # install additional packages
-RUN dnf install -y pip ansible
+#RUN dnf install -y pip ansible
 
 # install pip requirements
 ADD ./requirements.txt /tmp/requirements.txt
