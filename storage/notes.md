@@ -23,6 +23,8 @@ Issue when attach disk to the instance, change delete_with_instance and perform 
 The ali_instance module doesn't support cloud_essd as system disk category. Manually update the following file:
 /home/cheshi/.local/lib/python3.8/site-packages/ansible/modules/cloud/alicloud/ali_instance.py
 
+sed -i "s/'cloud_ssd']/'cloud_ssd', 'cloud_essd']/" $file
+
 > value of system_disk_category must be one of: cloud_efficiency, cloud_ssd, got: cloud_essd
 
 The ali_disk module doesn't support specifing the performance level.

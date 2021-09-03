@@ -16,6 +16,9 @@ export ALICLOUD_SECRET_KEY="$(cat ~/.aliyun/config.json | jq -r '.profiles[0].ac
 
 # Workaround
 
+Patch:
+`sed -i "s/'cloud_ssd']/'cloud_ssd', 'cloud_essd']/" /usr/local/lib/python3.8/site-packages/ansible/modules/cloud/alicloud/ali_instance.py`
+
 # Environment
 
 ## Involve Alibaba
@@ -28,13 +31,13 @@ ansible all -m lineinfile -a "path=~/.ssh/authorized_keys line='ssh-rsa AAAAB3Nz
 
 ## Test methodology
 
-# Commands
+### Commands
 
 ```
 vi ./ansible_vars.yml
 
 ansible-playbook ./create_vpc.yml
-ansible-playbook ./create_instances.yml && sleep 300
+ansible-playbook ./create_instances.yml && sleep 180
 
 ./update_inventory.sh
 ansible-playbook ./deploy_keypairs.yml
@@ -45,4 +48,15 @@ ansible-playbook ./run_sockperf_test.yml
 
 ansible-playbook ./release_instances.yml && sleep 30
 ansible-playbook ./remove_vpc.yml
+```
+
+### Debugging
+
+```
+./master.sh -m pps -t 10 -c "192.168.8.134" -d 4 | tee -a results.txt
+./master.sh -m pps -t 10 -c "192.168.8.135" -d 4 | tee -a results.txt
+./master.sh -m pps -t 10 -c "192.168.8.136" -d 4 | tee -a results.txt
+./master.sh -m pps -t 10 -c "192.168.8.137" -d 4 | tee -a results.txt
+./master.sh -m pps -t 10 -c "192.168.8.138" -d 4 | tee -a results.txt
+cat results.txt | grep -w PPS
 ```
