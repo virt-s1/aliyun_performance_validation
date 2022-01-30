@@ -1,5 +1,6 @@
 ansible.log
 network-netperf/manual
 storage/logs
+network-netperf/logs
 network-sockperf/logs
 inventory
