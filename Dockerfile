@@ -17,10 +17,10 @@ WORKDIR /root/workspace
 
 # install basic packages
 RUN dnf install -y jq psmisc findutils \
-    which ncurses tree procps-ng shyaml
+    which ncurses tree procps-ng shyaml bc
 
 # install additional packages
-#RUN dnf install -y pip ansible
+RUN dnf install -y pip
 
 # install pip requirements
 ADD ./requirements.txt /tmp/requirements.txt
@@ -33,7 +33,7 @@ RUN mkdir -p /root/workspace/logs
 # Export volumes
 VOLUME [ "/root/workspace/repo" ]
 VOLUME [ "/root/workspace/logs" ]
-VOLUME [ "/root/.perf-insight.yaml" ]
 
 # During debugging, this entry point will be overridden.
 CMD ["/bin/bash"]
+
