@@ -6,8 +6,10 @@
 function analyse() {
     # $1: fio json log
     file=$1
-    flavor=$(echo $file | cut -d '-' -f 2)
+    flavor=$(echo $file | cut -d '_' -f 2)
     [ -z "$flavor" ] && flavor=unknown
+    os=$(echo $file | cut -d '_' -f 3)
+    [ -z "$os" ] && os=unknown
 
     rw=$(cat $file | jq -r '."global options".rw')
     bs=$(cat $file | jq -r '."global options".bs')
@@ -26,13 +28,13 @@ function analyse() {
     lat_ns_w=$(cat $file | jq -r '.jobs[0].write.lat_ns.mean')
     lat_ms=$(echo "($lat_ns_r + $lat_ns_w) / 1000000" | bc) # ns to ms
 
-    table="${table}$(printf '%s;%s;%s;%d;%d;%d;%d;%d;%s' \
-        $flavor $rw $bs $iodepth $numjobs $iops $bw $lat_ms $file)\n"
+    table="${table}$(printf '%s;%s;%s;%s;%d;%d;%d;%d;%d;%s' \
+        $flavor $os $rw $bs $iodepth $numjobs $iops $bw $lat_ms $file)\n"
 }
 
 function print() {
     echo -e $table | column -t -s ';' \
-        -N "Flavor,RW,BS,IODepth,Numjobs,IOPS,BW(MiB/s),Lat(ms),Logfile"
+        -N "Flavor,OS,RW,BS,IODepth,Numjobs,IOPS,BW(MiB/s),Lat(ms),Logfile"
 }
 
 function show_usage() {
@@ -81,7 +83,7 @@ fi
 
 # Main
 cd $logdir || exit 1
-for log in $(ls fio-*.log); do
+for log in $(ls fio_*.log); do
     analyse $log
 done
 

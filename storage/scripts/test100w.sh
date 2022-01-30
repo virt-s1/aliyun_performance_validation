@@ -41,6 +41,7 @@ logdir=$HOME/workspace/log
 mkdir -p $logdir
 flavor=$(curl http://100.100.100.200/latest/meta-data/instance/instance-type 2>/dev/null)
 [ -z "$flavor" ] && flavor=unknown
+os=$(source /etc/os-release && echo ${ID}-${VERSION_ID})
 timestamp=$(date +D%y%m%dT%H%M%S)
 
 # Check
@@ -55,9 +56,10 @@ sleep 5
 
 # Test IOPS and BW
 RunFio 10 64 4k randwrite $target
-mv /tmp/fio.log $logdir/fio-$flavor-$timestamp-iops.log
+mv /tmp/fio.log $logdir/fio_${flavor}_${os}_${timestamp}_iops.log
 
 RunFio 10 64 1m write $target
-mv /tmp/fio.log $logdir/fio-$flavor-$timestamp-bw.log
+mv /tmp/fio.log $logdir/fio_${flavor}_${os}_${timestamp}_bw.log
+sockperf.txt
 
 exit 0
