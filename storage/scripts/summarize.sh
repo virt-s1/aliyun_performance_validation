@@ -22,19 +22,20 @@ function analyse() {
 
     bw_r=$(cat $file | jq -r '.jobs[0].read.bw')
     bw_w=$(cat $file | jq -r '.jobs[0].write.bw')
-    bw=$(echo "($bw_r + $bw_w) / 1024" | bc) # KiB/s to MiB/s
+    bw_MiB=$(echo "scale=2; ($bw_r + $bw_w) / 1024" | bc) # KiB/s to MiB/s
+    bw_Gib=$(echo "scale=2; $bw_MiB * 8 / 1024" | bc) # MiB/s to Gib/s
 
     lat_ns_r=$(cat $file | jq -r '.jobs[0].read.lat_ns.mean')
     lat_ns_w=$(cat $file | jq -r '.jobs[0].write.lat_ns.mean')
     lat_ms=$(echo "($lat_ns_r + $lat_ns_w) / 1000000" | bc) # ns to ms
 
-    table="${table}$(printf '%s;%s;%s;%s;%d;%d;%d;%d;%d;%s' \
-        $flavor $os $rw $bs $iodepth $numjobs $iops $bw $lat_ms $file)\n"
+    table="${table}$(printf '%s;%s;%s;%s;%d;%d;%d;%.2f;%.2f;%d;%s' \
+        $flavor $os $rw $bs $iodepth $numjobs $iops $bw_MiB $bw_Gib $lat_ms $file)\n"
 }
 
 function print() {
     echo -e $table | column -t -s ';' \
-        -N "Flavor,OS,RW,BS,IODepth,Numjobs,IOPS,BW(MiB/s),Lat(ms),Logfile"
+        -N "Flavor,OS,RW,BS,IODepth,Numjobs,IOPS,BW(MiB/s),BW(Gib/s),Lat(ms),Logfile"
 }
 
 function show_usage() {
