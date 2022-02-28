@@ -28,11 +28,14 @@ function RunFio() {
     done
     spincpu=$(echo $cpulist | cut -d ',' -f 2-${nu})
     echo "cpus_allowed=$spincpu"
+
+    # Add "--size=1024g" for a workaround mentioned in BZ1953904#c9
     fio --ioengine=libaio --runtime=30s --numjobs=${numjobs} \
         --iodepth=${iodepth} --bs=${bs} --rw=${rw} --filename=${filename} \
         --time_based=1 --direct=1 --name=test --group_reporting \
         --cpus_allowed=$spincpu --cpus_allowed_policy=split \
-        --ramp_time=5 --output-format=json+ --output=/tmp/fio.log
+        --ramp_time=5 --output-format=json+ --output=/tmp/fio.log \
+        --size=1024g
 }
 
 # Main
