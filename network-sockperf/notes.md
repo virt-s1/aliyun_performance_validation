@@ -65,7 +65,7 @@ ansible all -m lineinfile -a "path=~/.ssh/authorized_keys line='ssh-rsa AAAAB3Nz
 
 # Test methodology
 
-ecs.hfc7.24xlarge (32/12m) highest performance certified
+ecs.c7.32xlarge (32/24m) highest performance certified
 
 ## Commands
 
@@ -82,7 +82,7 @@ ansible-playbook ./install_sockperf.yml
 ansible-playbook ./performance_tuning.yml
 
 ansible-playbook ./run_sockperf_test.yml
-./scripts/summarize.sh -l ./logs
+./scripts/summary.sh -l ./logs
 
 ansible-playbook ./release_instances.yml && sleep 30
 ansible-playbook ./remove_vpc.yml

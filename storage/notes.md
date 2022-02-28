@@ -101,7 +101,7 @@ footmark latest version (1.20.0) can not work with the latest Python (3.9) #296
 https://github.com/alibaba/alibaba.alicloud/issues/296
 
 **Solution**  
-As a workaround, using containerized environment, see `../README.md`.
+Use matched versions. As a solution, using containerized environment directly. Refer to `../README.md`.
 
 
 # Environment
