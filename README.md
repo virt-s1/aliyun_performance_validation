@@ -14,8 +14,8 @@ chcon -R -u system_u -t svirt_sandbox_file_t $HOME/.pem/
 # run as debug container
 podman run --rm -it --name aliyun-performance-validation \
     --volume $HOME/.aliyun/config.json:/root/.aliyun/config.json:ro \
-    --volume $HOME/mirror/codespace/aliyun_performance_validation/:/root/workspace/repo:rw \
     --volume $HOME/.pem/cheshi-docker.pem:/root/.pem/cheshi-docker.pem:ro \
+    --volume $HOME/mirror/codespace/aliyun_performance_validation/:/app:rw \
     aliyun-performance-validation /bin/bash
 
 # start the testing
@@ -23,5 +23,7 @@ export ALICLOUD_ACCESS_KEY="$(cat ~/.aliyun/config.json | jq -r '.profiles[0].ac
 export ALICLOUD_SECRET_KEY="$(cat ~/.aliyun/config.json | jq -r '.profiles[0].access_key_secret')"
 
 # following the notes.md in each sub test folder...
+./network/notes.md
+./storage/notes.md
 
 ```
