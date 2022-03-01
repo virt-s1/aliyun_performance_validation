@@ -22,7 +22,7 @@
 
     - name: Run test script
       script:
-        cmd: "{{ local_bin }}/test100w.sh &> {{ remote_logdir }}/test100w.log"
+        cmd: "{{ local_bin }}/test100w.sh"
 
     # - name: Run summarize script
     #   script:

@@ -84,7 +84,7 @@ fi
 
 # Main
 cd $logdir || exit 1
-for log in $(ls fio_*.log); do
+for log in $(ls fio_*.log | grep -v test100w); do
     analyse $log
 done
 
