@@ -82,7 +82,7 @@ ansible-playbook ./install_sockperf.yml
 ansible-playbook ./performance_tuning.yml
 
 ansible-playbook ./run_sockperf_test.yml
-./scripts/summary.sh -l ./logs
+./scripts/summarize.sh -l ./logs
 
 ansible-playbook ./release_instances.yml && sleep 30
 ansible-playbook ./remove_vpc.yml

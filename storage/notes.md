@@ -86,7 +86,7 @@ Add the following configure into `ansible.cfg` may helps:
 
 ```
 [ssh_connection]
-ssh_args="-C -o ControlMaster=auto
+ssh_args="-C -o ControlMaster=auto"
 ```
 
 # Issue 5
@@ -125,7 +125,9 @@ https://www.alibabacloud.com/help/zh/doc-detail/65077.htm?spm=a2c63.p38356
 
 # Commands
 
-```
+Single test steps:
+
+```bash
 vi ./ansible_vars.yml
 
 ansible-playbook ./create_vpc.yml
@@ -144,7 +146,9 @@ ansible-playbook ./release_instances.yml && sleep 30
 ansible-playbook ./remove_vpc.yml
 ```
 
-```
+Muliple instance types validation steps:
+
+```bash
 # prepare
 ansible-playbook ./create_vpc.yml
 ansible-playbook ./create_disk.yml
