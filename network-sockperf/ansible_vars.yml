@@ -1,6 +1,6 @@
 global:
   alicloud_region: cn-beijing
-  alicloud_zone: cn-beijing-h
+  alicloud_zone: cn-beijing-g
 vpc:
   vpc_name: cheshi-perf-vpc
   vpc_cidr: 192.168.0.0/16
@@ -9,9 +9,9 @@ vpc:
   sg_name: cheshi-perf-group
 instance:
   instance_name: cheshi-ansible-test
-  instance_type: ecs.ebmc6e.26xlarge
+  instance_type: ecs.ebmc5s.24xlarge
   system_disk_category: cloud_essd
-  ami_id: m-2zec2l0mdfxbdu9cspmy
+  ami_id: m-2ze75zraupbuivomozyh
   key_name: cheshi-docker
   count: 5
 sockperf_test:
