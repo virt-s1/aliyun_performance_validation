@@ -37,16 +37,19 @@ while getopts :hl:f: ARGS; do
     esac
 done
 
-cd ${logdir:=$PWD}
-flist=$(ls sockperf*.tar.gz)
+: ${logdir:=$PWD}
+workspace=$(mktemp -d)
+cp $logdir/sockperf*.tar.gz $workspace
 
-for f in $flist; do
-	echo "FILE: $f" >&2
-	lf=${f/%.tar.gz/.txt}
-	tar -xf $f $lf
+cd $workspace
+for file in $(ls *.tar.gz); do
+    echo "FILE: $file" >&2
+    tar -xf $file ${file/%.tar.gz/.txt}
 done
 
-cat sockperf*.txt | sort -u
+cat sockperf*.txt | head -n 1 | sort -u
+tail -n +2 -q sockperf*.txt
+
+rm -rf $workspace
 
 exit 0
-
