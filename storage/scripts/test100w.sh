@@ -69,11 +69,11 @@ sleep 5
 # Test IOPS
 RunFio 10 64 4k randwrite $target
 mv /tmp/fio.log $logdir/fio_${flavor}_${os}_${timestamp}_iops.log
-mv /tmp/test100w.log $logdir/fio_${flavor}_${os}_${timestamp}_test100w.log
+mv /tmp/test100w.log $logdir/fio_${flavor}_${os}_${timestamp}_iops_test100w.log
 
 # Test BW
 RunFio 10 64 1m write $target
 mv /tmp/fio.log $logdir/fio_${flavor}_${os}_${timestamp}_bw.log
-mv /tmp/test100w.log $logdir/fio_${flavor}_${os}_${timestamp}_test100w.log
+mv /tmp/test100w.log $logdir/fio_${flavor}_${os}_${timestamp}_bw_test100w.log
 
 exit 0
