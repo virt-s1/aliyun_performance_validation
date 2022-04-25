@@ -18,6 +18,7 @@
           command: grubby --update-kernel=ALL --args="intel_iommu=off"
         - name: Restart managed host
           reboot:
+            reboot_timeout: 120
             msg: "Ansible rebooting system for disabling IOMMU."
       when: "'IOMMU disabled' not in command_result.stdout"
 
