@@ -6,6 +6,7 @@ function show_usage() {
     echo "Untar sockperf logs and summarize the report."
     echo "$(basename $0) [-l LOGDIR]"
     echo "-l: The directory with sockperf log tarball."
+    echo "-f: The flavor"
     echo "    Will use '.' if not specified."
 }
 
@@ -19,6 +20,10 @@ while getopts :hl:f: ARGS; do
     l)
         # Logdir option
         logdir=$OPTARG
+        ;;
+    f)
+        # Flavor
+        flavor=$OPTARG
         ;;
     "?")
         echo "$(basename $0): unknown option: $OPTARG" >&2
@@ -39,11 +44,17 @@ done
 
 : ${logdir:=$PWD}
 workspace=$(mktemp -d)
-cp $logdir/sockperf*.tar.gz $workspace
+if [ $flavor != '' ]; then
+    for i in $(ls logs/sockperf*.tar.gz | grep $flavor); do
+        cp -f $i $workspace
+    done
+else
+    cp $logdir/sockperf*.tar.gz $workspace
+fi
 
 cd $workspace
 for file in $(ls *.tar.gz); do
-    echo "FILE: $file" >&2
+    #echo "FILE: $file" >&2
     tar -xf $file ${file/%.tar.gz/.txt}
 done
 
