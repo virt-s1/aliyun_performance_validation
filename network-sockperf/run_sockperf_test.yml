@@ -49,12 +49,12 @@
         msg: "Client IPs: '{{ client_ips }}'"
 
     - name: Run test (PPS)
-      command: "{{ remote_bin }}/master.sh -m pps -c '{{ client_ips }}' \
+      command: "{{ remote_bin }}/master.sh -m pps -c '{{ client_ips }}' -z {{ global.alicloud_zone }} \
         -d {{ sockperf_test.pps_duplicates }} -t {{ sockperf_test.pps_duration }}"
       when: sockperf_test.pps_run is true
 
     - name: Run test (BW)
-      command: "{{ remote_bin }}/master.sh -m bw -c '{{ client_ips }}' \
+      command: "{{ remote_bin }}/master.sh -m bw -c '{{ client_ips }}' -z {{ global.alicloud_zone }} \
         -d {{ sockperf_test.bw_duplicates }} -t {{ sockperf_test.bw_duration }}"
       when: sockperf_test.bw_run is true
 
