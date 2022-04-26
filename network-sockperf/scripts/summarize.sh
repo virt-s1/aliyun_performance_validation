@@ -44,7 +44,7 @@ done
 
 : ${logdir:=$PWD}
 workspace=$(mktemp -d)
-if [ $flavor != '' ]; then
+if [[ $flavor != '' ]]; then
     for i in $(ls logs/sockperf*.tar.gz | grep $flavor); do
         cp -f $i $workspace
     done

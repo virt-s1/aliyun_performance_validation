@@ -5,14 +5,15 @@
 
 function show_usage() {
     echo "Schedule test and analyse data on server."
-    echo "$(basename $0) <-m TESTMODE> <-c CLIENTS> [-t TIMEOUT] [-d DUPLICATES]"
+    echo "$(basename $0) <-m TESTMODE> <-c CLIENTS> <-z ZONE> [-t TIMEOUT] [-d DUPLICATES]"
     echo "  TESTMODE: The test mode to perform (pps|bw)."
     echo "   CLIENTS: The list of clients' IP address."
+    echo "     ZONE:  The zone of the test"
     echo "   TIMEOUT: The interval of the test (default=30)."
     echo "DUPLICATES: The duplicates of the test (default=1)."
 }
 
-while getopts :hm:c:t:d: ARGS; do
+while getopts :hm:c:z:t:d: ARGS; do
     case $ARGS in
     h)
         # Help option
@@ -26,6 +27,10 @@ while getopts :hm:c:t:d: ARGS; do
     c)
         # clients option
         clients=$OPTARG
+        ;;
+    z)
+        # zone option
+        zone=$OPTARG
         ;;
     t)
         # timeout option
@@ -139,8 +144,8 @@ rxGbps=$(echo "scale=2; ${rxkBps:-0} * 8 / 1000000" | bc)
 # Dump results
 logfile=$logdir/sockperf_${flavor}_${os}_${timestamp}.txt
 echo "
-Flavor  OS  Mode          CLT         CPU       DUP         Links    Duration PPSrx(k)  BWrx(Gb/s)
-$flavor $os ${testmode^^} $client_num $cpu_core $duplicates ${links} $timeout ${rxkpps} ${rxGbps}
+Flavor  OS  Mode          CLT         CPU       DUP         Links    Duration PPSrx(k)  BWrx(Gb/s) Zone
+$flavor $os ${testmode^^} $client_num $cpu_core $duplicates ${links} $timeout ${rxkpps} ${rxGbps}  ${zone}
 " | column -t >$logfile
 
 tarfile=$LOGPATH/sockperf_${flavor}_${os}_${timestamp}.tar.gz
