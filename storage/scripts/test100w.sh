@@ -52,6 +52,8 @@ logdir=$HOME/workspace/log
 mkdir -p $logdir
 flavor=$(curl http://100.100.100.200/latest/meta-data/instance/instance-type 2>/dev/null)
 [ -z "$flavor" ] && flavor=unknown
+zone=$(curl http://100.100.100.200/latest/meta-data/zone-id 2>/dev/null)
+[ -z "$zone" ] && zone=unknown
 os=$(source /etc/os-release && echo ${ID}-${VERSION_ID})
 timestamp=$(date +D%y%m%dT%H%M%S)
 devname=${target##*/}
@@ -68,12 +70,12 @@ sleep 5
 
 # Test IOPS
 RunFio 10 64 4k randwrite $target
-mv /tmp/fio.log $logdir/fio_${flavor}_${os}_${timestamp}_iops.log
-mv /tmp/test100w.log $logdir/fio_${flavor}_${os}_${timestamp}_iops_test100w.log
+mv /tmp/fio.log $logdir/fio_${flavor}_${os}_${zone}_${timestamp}_iops.log
+mv /tmp/test100w.log $logdir/fio_${flavor}_${os}_${zone}_${timestamp}_iops_test100w.log
 
 # Test BW
 RunFio 10 64 1m write $target
-mv /tmp/fio.log $logdir/fio_${flavor}_${os}_${timestamp}_bw.log
-mv /tmp/test100w.log $logdir/fio_${flavor}_${os}_${timestamp}_bw_test100w.log
+mv /tmp/fio.log $logdir/fio_${flavor}_${os}_${zone}_${timestamp}_bw.log
+mv /tmp/test100w.log $logdir/fio_${flavor}_${os}_${zone}_${timestamp}_bw_test100w.log
 
 exit 0
