@@ -133,16 +133,38 @@ vi ./ansible_vars.yml
 ansible-playbook ./create_vpc.yml
 ansible-playbook ./create_instances.yml
 ansible-playbook ./create_disk.yml
-ansible-playbook ./attach_disk.yml
+ansible-playbook ./attach_disk.yml (optional)
+
+# Don't forget to change the disk performance level to PL3 manually for some high performance instances families
 
 ./update_inventory.sh
 ansible-playbook ./run_storage_test.yml
 ./scripts/summarize.sh -l ./logs
 ls -latr ./logs
 
-ansible-playbook ./detach_disk.yml
-ansible-playbook ./delete_disk.yml
+ansible-playbook ./detach_disk.yml (optional)
+ansible-playbook ./delete_disk.yml (optional)
 ansible-playbook ./release_instances.yml && sleep 30
+ansible-playbook ./remove_vpc.yml
+```
+
+Bandwidth test steps with multiple disks:
+
+```bash
+# Specify the disk_size and disk_count
+vi ./ansible_vars.yml
+
+ansible-playbook ./create_vpc.yml
+ansible-playbook ./create_instances.yml
+ansible-playbook ./create_disk.yml
+
+# Don't forget to change the disk performance level to PL3 manually for some high performance instances families
+
+./update_inventory.sh
+ansible-playbook ./run_bw_storage_test.yml
+./scripts/summarize.sh -l ./logs
+
+ansible-playbook ./release_instances.yml
 ansible-playbook ./remove_vpc.yml
 ```
 

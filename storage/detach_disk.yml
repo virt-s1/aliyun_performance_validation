@@ -20,6 +20,7 @@
     - name: Detach disk
       ali_disk:
         alicloud_region: "{{ global.alicloud_region }}"
-        disk_id: "{{ disk_facts.disk_ids[0] }}"
+        disk_id: "{{ item }}"
         instance_id: "{{ instances_facts.instances[0].id }}"
         state: absent
+      with_items: "{{ disk_facts.disk_ids }}"

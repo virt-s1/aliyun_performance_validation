@@ -20,6 +20,7 @@
     - name: Attach disk to instance
       ali_disk:
         alicloud_region: "{{ global.alicloud_region }}"
-        disk_id: "{{ disk_facts.disks[0].id }}"
+        disk_id: "{{ item }}"
         instance_id: "{{ instances_facts.instances[0].id }}"
         delete_with_instance: "{{ disk.delete_with_instance }}"
+      with_items: "{{ disk_facts.disk_ids }}"
