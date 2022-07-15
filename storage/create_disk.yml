@@ -5,12 +5,21 @@
     - ansible_vars.yml
 
   tasks:
+    - name: Get Instance ID
+      ali_instance_info:
+        alicloud_region: "{{ global.alicloud_region }}"
+        name_prefix: "{{ instance.instance_name }}"
+      register: instances_facts
+
     - name: Create disk
       ali_disk:
-        disk_name: "{{ disk.disk_name }}"
+        disk_name: "{{ disk.disk_name }}-{{ item }}"
         alicloud_region: "{{ global.alicloud_region }}"
         alicloud_zone: "{{ global.alicloud_zone }}"
         size: "{{ disk.disk_size }}"
         disk_category: "{{ disk.disk_category }}"
+        instance_id: "{{ instances_facts.instances[0].id }}"
+        delete_with_instance: "{{ disk.delete_with_instance }}"
         disk_tags:
           - Name: AnsiblePerfTest
+      with_sequence: start=1 end={{ disk.disk_count }} stride=1

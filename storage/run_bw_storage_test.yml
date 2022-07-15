@@ -1,0 +1,39 @@
+- hosts: all
+
+  vars:
+    local_bin: "./scripts"
+    remote_logdir: "~/workspace/log"
+    local_logdir: "./logs"
+
+  tasks:
+    - name: Install packages
+      package:
+        name:
+          - libaio
+          - libaio-devel
+          - fio
+        state: present
+
+    - name: Create log path
+      file:
+        path: "{{ remote_logdir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Run test script
+      script:
+        cmd: "{{ local_bin }}/testbandwidth.sh"
+
+    - name: Find logs
+      find:
+        paths: "{{ remote_logdir }}"
+        patterns: "*.log"
+        recurse: no
+      register: targets
+
+    - name: Fetch logs
+      fetch:
+        src: "{{ item.path }}"
+        dest: "{{ local_logdir }}/"
+        flat: yes
+      with_items: "{{ targets.files }}"

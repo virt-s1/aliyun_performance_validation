@@ -17,5 +17,6 @@ disk:
   provision: yes
   disk_name: cheshi-perf-disk
   disk_size: 10240
+  disk_count: 1
   disk_category: cloud_essd
   delete_with_instance: yes
