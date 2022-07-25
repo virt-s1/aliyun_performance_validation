@@ -47,13 +47,14 @@ function print() {
 
 function show_usage() {
     echo "Analyse fio json outputs and summarize the report."
-    echo "$(basename $0) [-l LOGDIR] [-f FILENAME]"
+    echo "$(basename $0) [-l LOGDIR] [-f FLAVOR] [-o FILENAME]"
     echo "-l: The directory with fio json output files."
     echo "    Will use '~/workspace/log/' than '.' if not specified."
-    echo "-f: The filename of the report. Will use STDOUT if not specified."
+    echo "-f: The flavor"
+    echo "-o: The filename of the report. Will use STDOUT if not specified."
 }
 
-while getopts :hl:f: ARGS; do
+while getopts :hl:f:o: ARGS; do
     case $ARGS in
     h)
         # Help option
@@ -65,6 +66,10 @@ while getopts :hl:f: ARGS; do
         logdir=$OPTARG
         ;;
     f)
+        # Flavor
+        flavor=$OPTARG
+        ;;
+    o)
         # Filename option
         filename=$OPTARG
         ;;
@@ -91,7 +96,9 @@ fi
 
 # Main
 cd $logdir || exit 1
-for log in $(ls fio_*.log | grep -v test100w); do
+
+[ -z $flavor ] && log_list=$(ls fio_*.log | grep -v test100w) || log_list=$(ls fio_*.log | grep $flavor | grep -v test100w)
+for log in $log_list; do
     analyse $log
 done
 

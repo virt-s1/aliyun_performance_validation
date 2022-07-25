@@ -14,11 +14,13 @@ group_reporting
 runtime=30
 " > /tmp/test.fio
 
-    #count=$(ls  /dev/vd* | grep -v /dev/vda | uniq | wc -l)
-    for filename in $(ls  /dev/vd* | grep -v /dev/vda)
+    #targets=$(ls  /dev/vd* | grep -v /dev/vda)
+    #[ -z "$targets" ] && targets=$(lsblk -l | grep nvme | cut -d ' ' -f 1 | grep -v nvme0)
+    targets=$(lsblk -l | grep -E 'nvme|vd' | cut -d ' ' -f 1 | grep -vE 'nvme0|vda')
+    for target in $targets
     do
-        echo "[tester_$filename]
-filename=$filename
+        echo "[tester_$target]
+filename=/dev/$target
 " >> /tmp/test.fio
     done
 
