@@ -48,6 +48,7 @@ function RunFio() {
 
 # Main
 target=$(ls /dev/vd* | tail -n 1)
+[ -z "$target" ] && target=$(ls /dev/nvme* | tail -n 1)
 logdir=$HOME/workspace/log
 mkdir -p $logdir
 flavor=$(curl http://100.100.100.200/latest/meta-data/instance/instance-type 2>/dev/null)
