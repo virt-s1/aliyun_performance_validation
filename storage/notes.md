@@ -136,7 +136,6 @@ ansible-playbook ./create_disk.yml
 ansible-playbook ./attach_disk.yml (optional)
 
 # Modify the disk performance level to PL3 for some high performance instances families
-# Change the disk name inside the next shell script according to your defination in ansible_vars.yml
 ./modify_disk_perflevel.sh
 
 ./update_inventory.sh
@@ -161,7 +160,6 @@ ansible-playbook ./create_instances.yml
 ansible-playbook ./create_disk.yml
 
 # Modify the disk performance level to PL3 for some high performance instances families
-# Change the disk name inside the next shell script according to your defination in ansible_vars.yml
 ./modify_disk_perflevel.sh
 
 ./update_inventory.sh
