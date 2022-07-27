@@ -135,7 +135,9 @@ ansible-playbook ./create_instances.yml
 ansible-playbook ./create_disk.yml
 ansible-playbook ./attach_disk.yml (optional)
 
-# Don't forget to change the disk performance level to PL3 manually for some high performance instances families
+# Modify the disk performance level to PL3 for some high performance instances families
+# Change the disk name inside the next shell script according to your defination in ansible_vars.yml
+./modify_disk_perflevel.sh
 
 ./update_inventory.sh
 ansible-playbook ./run_storage_test.yml
@@ -158,7 +160,9 @@ ansible-playbook ./create_vpc.yml
 ansible-playbook ./create_instances.yml
 ansible-playbook ./create_disk.yml
 
-# Don't forget to change the disk performance level to PL3 manually for some high performance instances families
+# Modify the disk performance level to PL3 for some high performance instances families
+# Change the disk name inside the next shell script according to your defination in ansible_vars.yml
+./modify_disk_perflevel.sh
 
 ./update_inventory.sh
 ansible-playbook ./run_bw_storage_test.yml
@@ -168,17 +172,16 @@ ansible-playbook ./release_instances.yml
 ansible-playbook ./remove_vpc.yml
 ```
 
-Muliple instance types validation steps:
+Multiple instance types validation steps:
 
 ```bash
 # prepare
 ansible-playbook ./create_vpc.yml
-ansible-playbook ./create_disk.yml
 
 # create
 ansible-playbook ./create_instances.yml
 sleep 600
-ansible-playbook ./attach_disk.yml
+ansible-playbook ./create_disk.yml
 
 # test
 ./update_inventory.sh
@@ -188,6 +191,11 @@ ansible-playbook ./run_storage_test.yml
 # destroy
 ansible-playbook ./detach_disk.yml
 ansible-playbook ./release_instances.yml
+
+# create
+ansible-playbook ./create_instances.yml
+ansible-playbook ./attach_disk.yml
+...
 
 # teardown
 ansible-playbook ./delete_disk.yml
