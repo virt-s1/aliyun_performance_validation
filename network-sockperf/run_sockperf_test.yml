@@ -33,6 +33,12 @@
         - master.sh
         - transmit.sh
 
+    - name: Install bc package
+      package:
+        name:
+          - bc
+        state: present
+
     - name: Install sysstat package
       package:
         name:
