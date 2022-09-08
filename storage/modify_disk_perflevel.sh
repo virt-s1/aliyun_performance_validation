@@ -3,9 +3,11 @@
 # Set performance level to PL3 by default
 perf_level=PL3
 
-which aliyun > /dev/null || {
-    echo "ERROR: Please make sure aliyun CLI exists in your env!"
-    exit 1
+which aliyun &> /dev/null || {
+    curl -s -kL  https://aliyuncli.alicdn.com/aliyun-cli-linux-latest-amd64.tgz -o /tmp/aliyun-cli-linux-latest-amd64.tgz
+    tar zxf /tmp/aliyun-cli-linux-latest-amd64.tgz
+    mv -f aliyun /usr/local/bin
+    rm -f /tmp/aliyun-cli-linux-latest-amd64.tgz
 }
  
 region=$(grep alicloud_region ansible_vars.yml | awk '{print $2}')
