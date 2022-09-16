@@ -1,0 +1,71 @@
+---
+- hosts: all
+  gather_facts: yes
+
+- hosts: test
+  vars_files:
+    - ansible_vars.yml
+  vars:
+    local_bin: "./scripts"
+    local_log: "./logs"
+    remote_bin: "~/workspace"
+    remote_log: "~/workspace/log"
+    client_ips: "{{ groups['peers'] | \
+      map('extract', hostvars, ['ansible_eth0', 'ipv4', 'address']) | \
+      join(' ') }}"
+
+  tasks:
+    - name: Create folders
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      with_items:
+        - "{{ remote_bin }}"
+        - "{{ remote_log }}"
+
+    - name: Deliver scripts to server
+      copy:
+        src: "{{ local_bin }}/{{ item }}"
+        dest: "{{ remote_bin }}"
+        mode: "0755"
+      with_items:
+        - bw_test_server.sh
+        - bw_test_client.sh
+
+    - name: Install bc package
+      package:
+        name:
+          - bc
+        state: present
+
+    - name: Install sysstat package
+      package:
+        name:
+          - sysstat
+        state: present
+
+    - name: Enable sysstat service
+      service:
+        name: sysstat
+        state: started
+
+    - name: Show client IPs
+      debug:
+        msg: "Client IPs: '{{ client_ips }}'"
+
+    - name: Run test
+      command: "{{ remote_bin }}/bw_test_server.sh -c '{{ client_ips }}' -z {{ global.alicloud_zone }}"
+
+    - name: Find logs
+      find:
+        paths: "{{ remote_log }}"
+        patterns: "*.tar.gz"
+      register: targets
+
+    - name: Fetch logs
+      fetch:
+        src: "{{ item.path }}"
+        dest: "{{ local_log }}/"
+        flat: yes
+      with_items: "{{ targets.files }}"

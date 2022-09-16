@@ -1,0 +1,43 @@
+---
+- name: Make sure netperf is installed
+  hosts: all
+  vars:
+    tarball: "./files/netperf-2.7.0.tar.gz"
+    folder_name: "netperf-netperf-2.7.0"
+  tasks:
+    - name: Install compile tools
+      package:
+        name:
+          - make
+          - gcc
+          - autoconf
+          - automake
+          - libtool
+          - sysstat
+        state: present
+
+    - name: Create directory for installation
+      file:
+        path: /tmp/netperf-setup
+        state: directory
+        mode: "0755"
+
+    - name: Extract tarball
+      unarchive:
+        src: "{{ tarball }}"
+        dest: /tmp/netperf-setup/
+
+    - name: Install netperf (./configure)
+      command: ./configure
+      args:
+        chdir: /tmp/netperf-setup/{{ folder_name }}
+
+    - name: Install netperf (make)
+      command: make
+      args:
+        chdir: /tmp/netperf-setup/{{ folder_name }}
+
+    - name: Install netperf (make install)
+      command: make install
+      args:
+        chdir: /tmp/netperf-setup/{{ folder_name }}

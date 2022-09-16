@@ -45,11 +45,11 @@ done
 : ${logdir:=$PWD}
 workspace=$(mktemp -d)
 if [[ $flavor != '' ]]; then
-    for i in $(ls logs/sockperf*.tar.gz | grep $flavor); do
+    for i in $(ls logs/*perf*.tar.gz | grep $flavor); do
         cp -f $i $workspace
     done
 else
-    cp $logdir/sockperf*.tar.gz $workspace
+    cp $logdir/*perf*.tar.gz $workspace
 fi
 
 cd $workspace
@@ -58,8 +58,8 @@ for file in $(ls *.tar.gz); do
     tar -xf $file ${file/%.tar.gz/.txt}
 done
 
-cat sockperf*.txt | head -n 1 | sort -u
-tail -n +2 -q sockperf*.txt
+cat *perf*.txt | head -n 1 | sort -u
+tail -n +2 -q *perf*.txt
 
 rm -rf $workspace
 
