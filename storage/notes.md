@@ -109,9 +109,11 @@ Use matched versions. As a solution, using containerized environment directly. R
 ## Cloud Disk
 
 Disk      TiB  GiB    IOPS     Test
+ESSD-PL3  2    2048   104200   100k
 ESSD-PL3  5    5120   257800   250k
 ESSD-PL3  6    6144   309000   300k
 ESSD-PL3  10   10240  513800   500k
+ESSD-PL3  13   13312  667400   650k
 ESSD-PL3  20   20480  1000000  1m
 
 instance_type: ecs.c6e.26xlarge (480,000/2048) | highest performance certified

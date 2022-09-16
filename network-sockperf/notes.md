@@ -69,6 +69,8 @@ ecs.c7.32xlarge (32/24m) highest performance certified
 
 ## Commands
 
+PPS and Bandwidth test steps with sockperf:
+
 ```
 vi ./ansible_vars.yml
 
@@ -88,6 +90,23 @@ ansible-playbook ./release_instances.yml && sleep 30
 ansible-playbook ./remove_vpc.yml
 ```
 
+Single Bandwidth test steps with netperf:
+
+```
+vi ./ansible_vars.yml  # Set instance count to 2
+ansible-playbook ./create_instances.yml && sleep 180
+
+./update_inventory.sh
+ansible all -m ping -o
+ansible-playbook ./deploy_keypairs.yml
+ansible-playbook ./install_netperf.yml
+
+ansible-playbook ./run_bw_test.yml
+./scripts/summarize.sh -l ./logs
+
+ansible-playbook ./release_instances.yml && sleep 30
+ansible-playbook ./remove_vpc.yml
+```
 ### Debugging
 
 ```
