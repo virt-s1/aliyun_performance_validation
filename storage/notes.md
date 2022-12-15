@@ -141,6 +141,8 @@ ansible-playbook ./attach_disk.yml (optional)
 ./modify_disk_perflevel.sh
 
 ./update_inventory.sh
+ansible all -m ping -o
+
 ansible-playbook ./run_storage_test.yml
 ./scripts/summarize.sh -l ./logs
 ls -latr ./logs
@@ -165,6 +167,8 @@ ansible-playbook ./create_disk.yml
 ./modify_disk_perflevel.sh
 
 ./update_inventory.sh
+ansible all -m ping -o
+
 ansible-playbook ./run_bw_storage_test.yml
 ./scripts/summarize.sh -l ./logs
 
