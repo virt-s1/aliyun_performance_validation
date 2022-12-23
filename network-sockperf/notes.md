@@ -52,6 +52,23 @@ Checking with `ansible-doc -F | grep openssh_keypairi` to know `crytop` was not 
 **Solution**
 Install `community.crypto` by command `ansible-galaxy collection install community.crypto`.
 
+## Issue 3
+
+While accessing the instances with ansible, it shows:
+```
+[root@4c50c6401e24 network-sockperf]# ansible all -m ping -o
+test | UNREACHABLE!: encountered RSA key, expected OPENSSH key
+peer1 | UNREACHABLE!: encountered RSA key, expected OPENSSH key
+```
+
+**Root cause**
+The version of paramiko module is low.
+
+**Solution**
+Upgrade paramiko module:
+```
+[root@4c50c6401e24 network-sockperf]# pip install paramiko -U
+```
 
 # Environment
 
