@@ -98,7 +98,7 @@ ansible-playbook ./create_instances.yml && sleep 180
 ansible all -m ping -o
 ansible-playbook ./deploy_keypairs.yml
 ansible-playbook ./install_sockperf.yml
-ansible-playbook ./performance_tuning.yml
+ansible-playbook ./performance_tuning.yml (optional)
 
 ansible-playbook ./run_sockperf_test.yml
 ./scripts/summarize.sh -l ./logs
