@@ -127,7 +127,7 @@ https://www.alibabacloud.com/help/zh/doc-detail/65077.htm?spm=a2c63.p38356
 
 # Commands
 
-Single test steps:
+Single test steps with multiple disks:
 
 ```bash
 vi ./ansible_vars.yml
@@ -143,36 +143,13 @@ ansible-playbook ./attach_disk.yml (optional)
 ./update_inventory.sh
 ansible all -m ping -o
 
-ansible-playbook ./run_storage_test.yml
+ansible-playbook ./run_bw_storage_test.yml
 ./scripts/summarize.sh -l ./logs
 ls -latr ./logs
 
 ansible-playbook ./detach_disk.yml (optional)
 ansible-playbook ./delete_disk.yml (optional)
 ansible-playbook ./release_instances.yml && sleep 30
-ansible-playbook ./remove_vpc.yml
-```
-
-Bandwidth test steps with multiple disks:
-
-```bash
-# Specify the disk_size and disk_count
-vi ./ansible_vars.yml
-
-ansible-playbook ./create_vpc.yml
-ansible-playbook ./create_instances.yml
-ansible-playbook ./create_disk.yml
-
-# Modify the disk performance level to PL3 for some high performance instances families
-./modify_disk_perflevel.sh
-
-./update_inventory.sh
-ansible all -m ping -o
-
-ansible-playbook ./run_bw_storage_test.yml
-./scripts/summarize.sh -l ./logs
-
-ansible-playbook ./release_instances.yml
 ansible-playbook ./remove_vpc.yml
 ```
 
@@ -189,7 +166,7 @@ ansible-playbook ./create_disk.yml
 
 # test
 ./update_inventory.sh
-ansible-playbook ./run_storage_test.yml
+ansible-playbook ./run_bw_storage_test.yml
 ./scripts/summarize.sh -l ./logs
 
 # destroy

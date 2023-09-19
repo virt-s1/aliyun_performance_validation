@@ -97,7 +97,9 @@ fi
 # Main
 cd $logdir || exit 1
 
-[ -z $flavor ] && log_list=$(ls fio_*.log | grep -v test100w) || log_list=$(ls fio_*.log | grep $flavor | grep -v test100w)
+[ -z $flavor ] && log_list=$(ls fio_*.log | grep -v test100w | grep -v job_file) || \
+    log_list=$(ls fio_*.log | grep $flavor | grep -v test100w | grep -v job_file)
+
 for log in $log_list; do
     analyse $log
 done

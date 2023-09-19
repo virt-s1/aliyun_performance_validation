@@ -118,6 +118,17 @@ if [ "$testmode" = "bw" ]; then
     sleep $(($timeout + 50)) && killall -q sockperf &
 fi
 
+
+# Bind interrupts for PPS test(> 2000W) according to https://help.aliyun.com/document_detail/419630.html
+# On g8y/c8y/r8y instances, the device is virtio1 not virtio2
+# Need to set cpu=64 for g8y/c8y/r8y on RHEL8 since the network card is on numa 1
+a=$(cat /proc/interrupts | grep virtio2-input | awk -F ':' '{print $1}')
+cpu=0
+for irq in $a; do
+    echo $cpu >/proc/irq/$irq/smp_affinity_list
+    let cpu+=2
+done
+
 # Trigger workload
 client_num=0
 for client in $clients; do
