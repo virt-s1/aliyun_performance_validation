@@ -2,8 +2,8 @@
 - name: Installed sockperf
   hosts: all
   vars:
-    tarball: "./files/sockperf-3.7.tar.gz"
-    extract_name: "sockperf-3.7"
+    tarball: "./files/sockperf-3.8.tar.gz"
+    extract_name: "sockperf-3.8"
   tasks:
     - name: Get sockperf status
       command: sockperf --version
@@ -24,6 +24,7 @@
               - make
               - automake
               - autoconf
+              - libtool
               - gcc-c++
               - gcc
               - perl
@@ -46,7 +47,7 @@
             chdir: /tmp/perftest-setup/{{ extract_name }}
 
         - name: Install sockperf (make)
-          command: make
+          shell: "make -j $(cat /proc/cpuinfo | grep 'process' | wc -l)"
           args:
             chdir: /tmp/perftest-setup/{{ extract_name }}
 

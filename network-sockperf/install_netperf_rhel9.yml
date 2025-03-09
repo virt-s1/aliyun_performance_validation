@@ -1,0 +1,11 @@
+---
+- name: Make sure netperf is installed
+  hosts: all
+  tasks:
+    - name: Install lksctp-tools
+      yum:
+        name: lksctp-tools
+        state: present
+
+    - name: Install netperf rpm
+      command: rpm -ivh https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/n/netperf-2.7.0-2.20210803git3bc455b.el9.x86_64.rpm

@@ -1,4 +1,5 @@
-FROM fedora:32
+#FROM fedora:32
+FROM fedora:38
 
 # Metadata
 LABEL author="Charles Shih"
@@ -18,7 +19,7 @@ WORKDIR /app
 # Install software packages
 RUN dnf install -y jq psmisc findutils \
     which ncurses tree procps-ng shyaml bc \
-    pip diffutils less
+    pip diffutils less openssh-clients
 
 # Install pip requirements
 ADD ./requirements.txt /tmp/requirements.txt
