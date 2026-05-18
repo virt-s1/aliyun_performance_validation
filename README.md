@@ -1,5 +1,7 @@
 # Test Framework
 
+This repo has been moved to https://gitlab.com/virt-cloud/aliyun_performance_validation 
+
 ## Container Usage
 
 ```bash
